@@ -152,9 +152,7 @@ public class TimeDAO {
 			// 例外処理
 				if (conn != null) {
 						conn.close();
-			
 				}
-			
-		
 			return timeList;
-}}
+		}
+}

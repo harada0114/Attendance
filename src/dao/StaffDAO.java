@@ -11,7 +11,57 @@ import model.Staff;
 import model.Login;
 
 public class StaffDAO {
-
+	
+	// 重複メールアドレスチェック
+	public boolean doubleMail(String mail) throws ClassNotFoundException,SQLException {
+			
+		Connection conn = null;		
+		Class.forName("com.mysql.jdbc.Driver");	
+		conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+			
+		String sql = "SELECT mail FROM staff WHERE mail=?";
+		PreparedStatement pStmt = conn.prepareStatement(sql);
+		pStmt.setString(1, mail);
+							
+		ResultSet rs = pStmt.executeQuery();
+						
+		// 同じメールアドレスが取得できれば
+		if (rs.next()) {
+			return true;
+		}
+		if (conn != null) {
+			conn.close();
+		}
+		return false;		
+	}
+		
+		
+	// 新規登録
+	public boolean createStaff(Staff staff) throws ClassNotFoundException, SQLException {
+		
+		Connection conn = null;
+		Class.forName("com.mysql.jdbc.Driver");
+		conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		    	
+		String sql = "INSERT INTO staff(mail,pass,name) VALUES(?,?,?)";
+	    PreparedStatement pStmt = conn.prepareStatement(sql);
+	    pStmt.setString(1, staff.getMail());
+	    pStmt.setString(2, staff.getPass());
+	    pStmt.setString(3, staff.getName());
+		
+	    int result = pStmt.executeUpdate();
+				
+	    if (result != 1) {
+	    	return false;
+		}
+	    
+		if (conn != null) {
+			conn.close();
+		}
+		return true;
+	}
+		
+		
 	// ログインチェックメソッド
 	public Staff findByLogin(Login login) {
 		
@@ -60,65 +110,5 @@ public class StaffDAO {
 			}
 		}		
 		return staff;
-	}
-	
-	// 新規登録メソッド
-	public boolean newStaff(Staff staff) {
-		Connection conn = null;
-		
-		try {	
-			Class.forName("com.mysql.jdbc.Driver");
-			
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-
-			// レコードチェック。mailに重複がないか。
-			String sql = "SELECT mail, pass, name FROM staff WHERE mail=?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, staff.getMail());
-					    
-		    ResultSet rs = pStmt.executeQuery();
-		    
-		    // 取得した結果、メールアドレスが一致した場合 //
-		    if (rs.next()) { 
-		    	String mail = rs.getString("mail");
-		    			
-		    	if (mail.equals(staff.getMail())) {
-		    		return false;
-		    	}
-		    	
-		    } else {
-		    	
-		    	String sql2 = "INSERT INTO staff(mail,pass,name) VALUES(?,?,?)";
-		    	PreparedStatement pStmt2 = conn.prepareStatement(sql2);
-		    	pStmt2.setString(1, staff.getMail());
-		    	pStmt2.setString(2, staff.getPass());
-		    	pStmt2.setString(3, staff.getName());
-		
-		    	int result = pStmt2.executeUpdate();
-						
-		    	if (result != 1) {
-		    		return false;
-		    	}
-		    }
-		    
-			// 例外処理
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-		
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return false;
-	
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		return true;
 	}
 }

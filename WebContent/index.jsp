@@ -4,8 +4,6 @@
     <%
     // リクエストスコープに保存されたエラーメッセージを取得
     String errorMsg1 = (String) request.getAttribute("errorMsg1");
-    String errorMsg2 = (String) request.getAttribute("errorMsg2");
-    String errorMsg3 = (String) request.getAttribute("errorMsg3");
     
  	String okMsg1 = (String) request.getAttribute("okMsg1");
     %>
@@ -21,14 +19,6 @@
 	
 	<% if (errorMsg1 != null) { %>
 	<%= errorMsg1 %><br>
-	<% } %>
-	
-	<% if (errorMsg2 != null) { %>
-	<%= errorMsg2 %><br>
-	<% } %>
-	
-	<% if (errorMsg3 != null) { %>
-	<%= errorMsg3 %><br>
 	<% } %>
 	
 	<% if (okMsg1 != null) { %>

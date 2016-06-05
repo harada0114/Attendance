@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 public class CheckPass {
 	
 	public enum ErrorMsgPass {
-		pass_ok,pass_limit,pass_blank,
+		ok_pass,limit_pass,blank_pass,
 	}
 	
 	public ErrorMsgPass checkPass(String pass) {
@@ -14,14 +14,14 @@ public class CheckPass {
 		
 		// 空文字
 		if (pass.isEmpty()) {
-			return ErrorMsgPass.pass_blank;
+			return ErrorMsgPass.blank_pass;
 
 		// 半角英数6文字
 		} else if (pattern_pass.matcher(pass).matches() != true) {
-			return ErrorMsgPass.pass_limit;
+			return ErrorMsgPass.limit_pass;
 								
 		} else {		
-			return ErrorMsgPass.pass_ok;
+			return ErrorMsgPass.ok_pass;
 		}
 	}
 }

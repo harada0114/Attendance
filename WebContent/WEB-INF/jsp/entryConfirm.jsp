@@ -4,14 +4,12 @@
 <%@ page import="model.Staff" %>
 
 <%
-	// 表示されるため、セッションスコープに保存された登録アカウントを取得
-	Staff entryStaff = (Staff) session.getAttribute("entryStaff");
+	Staff entryStaff = (Staff) request.getAttribute("entryStaff");
 
-	// リクエストスコープに保存されたエラーメッセージを取得
+	// エラーメッセージを取得
 	String errorMsg1 = (String) request.getAttribute("errorMsg1");
 	String errorMsg2 = (String) request.getAttribute("errorMsg2");
 	String errorMsg3 = (String) request.getAttribute("errorMsg3");
-	String errorMsg4 = (String) request.getAttribute("errorMsg4");
 %>
     
 <!DOCTYPE html>
@@ -33,10 +31,6 @@
 	<% if (errorMsg3 != null) { %>
 	<%= errorMsg3 %><br>
 	<% } %>
-	
-	<% if (errorMsg4 != null) { %>
-	<%= errorMsg4 %><br>
-	<% } %>
 
 	<% if (errorMsg1 == null && errorMsg2 == null && errorMsg3 == null) { %>
 	<p>下記のユーザを登録します</p>
@@ -44,7 +38,9 @@
 	パスワード　　：●●●●●●<br>
 	名前　　　　　：<%= entryStaff.getName() %><br>
 	<br>
-	<a href="/Attendance/CreateStaffServlet">登録</a>
+	<form action="/Attendance/SendCreateStaffServlet?mail=<%= entryStaff.getMail() %>&pass=<%= entryStaff.getPass() %>&name=<%= entryStaff.getName() %>" method="post">
+	<input type="submit" value="登録">
+	</form>
 	<% } %>
 	<a href="/Attendance/CreateStaffServlet">戻る</a>
 	
