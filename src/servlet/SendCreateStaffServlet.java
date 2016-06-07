@@ -39,17 +39,13 @@ public class SendCreateStaffServlet extends HttpServlet {
 				request.setAttribute("okMsg1","登録が完了しました");
 				
 			} else {
-				request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");			
+				request.setAttribute("errorMsg1","登録に失敗しました。管理者にご連絡ください");			
 			}
 			
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
 			dispatcher.forward(request, response);
 
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");
-			
-		} catch (SQLException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");
 		}

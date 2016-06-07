@@ -28,7 +28,6 @@ public class TimelistServlet extends HttpServlet {
 	
 		String forwardPath = "";
 		
-		// ボタンを押してから出勤日時を生成、取得
 		Date today = new Date();
 		
 		String mail = request.getParameter("mail");	
@@ -43,18 +42,10 @@ public class TimelistServlet extends HttpServlet {
 			
 			forwardPath = "/WEB-INF/jsp/timelist.jsp";
 			
-		} catch (ClassNotFoundException e) {
-			// TODO 自動生成された catch ブロック
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("errorMsg1","システムエラーが発生しました。原田にご連絡ください");
 			forwardPath = "/WEB-INF/jsp/attendance.jsp";
-			
-		} catch (SQLException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。原田にご連絡ください");
-			forwardPath = "/WEB-INF/jsp/attendance.jsp";
-			
 		}
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);

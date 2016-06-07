@@ -12,10 +12,15 @@ import model.Time;
 
 public class TimeDAO {
 	
-	// DB出社処理
+	// 出社処理
+	
+	// メールと日付で検索し結果を得るメソッドをここに作成し、
+	// 出勤を押されたらinsertの前にそのメソッドを呼ぶようにしてみようか？
+	
 	public boolean admission(Time time) throws ClassNotFoundException,SQLException {
-		Connection conn = null;		
-
+		
+		Connection conn = null;	
+		try {
 			Class.forName("com.mysql.jdbc.Driver");
 						
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
@@ -46,13 +51,12 @@ public class TimeDAO {
 			if (result != 1) {	
 				return false;
 			}
-		
+		} finally {
 			if (conn != null) {
 				conn.close();
-				
 			}	
-		return true; // 出社可能です			
-		
+		}
+		return true; // 出社可能です
 	}
 	
 	// DB退社処理		
@@ -122,37 +126,36 @@ public class TimeDAO {
 	}
 			
 	// DB一覧表示処理
-		public List<Time> findAll(Time time) throws ClassNotFoundException,SQLException {
-			Connection conn = null;
+	public List<Time> findAll(Time time) throws ClassNotFoundException,SQLException {
 			
-			List<Time> timeList = new ArrayList<Time>();
+		List<Time> timeList = new ArrayList<Time>();
 		
-				Class.forName("com.mysql.jdbc.Driver");
-							
-				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-				
-				String sql = "SELECT mail,day,admission,leaving FROM time WHERE mail=?";
-				PreparedStatement pStmt = conn.prepareStatement(sql);
-			    pStmt.setString(1, time.getMail());
+		Connection conn = null;
+		Class.forName("com.mysql.jdbc.Driver");				
+		conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		
+		// メールアドレスが同じ全レコードを検索
+		String sql = "SELECT mail,day,admission,leaving FROM time WHERE mail=?";
+		PreparedStatement pStmt = conn.prepareStatement(sql);
+		pStmt.setString(1, time.getMail());
 			    			
-			    ResultSet rs = pStmt.executeQuery();
+		ResultSet rs = pStmt.executeQuery();
 			    
-			    // 結果をArrayListに格納
-			    while (rs.next()) { // 回す
-			    	String mail = rs.getString("mail");
-			    	String day = rs.getString("day");
-			    	String admission = rs.getString("admission");
-			    	String leaving = rs.getString("leaving");
+		// 結果をArrayListに格納
+		while (rs.next()) { // 回す
+			String mail = rs.getString("mail");
+		 	String day = rs.getString("day");
+			String admission = rs.getString("admission");
+			String leaving = rs.getString("leaving");
 
-			    	Time timeC = new Time(mail,day,admission,leaving); //timeCにレコードが詰まってる
+			Time find_time = new Time(mail,day,admission,leaving);
 			    	
-			    	// timeListにレコードを順番に詰める
-			    	timeList.add(timeC);
-			    }
-			// 例外処理
-				if (conn != null) {
-						conn.close();
-				}
-			return timeList;
+			// timeListにレコードを順番に詰める
+			timeList.add(find_time);
 		}
+		if (conn != null) {
+			conn.close();
+		}
+		return timeList;
+	}
 }

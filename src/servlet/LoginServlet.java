@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import model.Login;
 import model.LoginLogic;
+import model.Staff;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
@@ -24,6 +26,7 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		
 		request.setCharacterEncoding("UTF-8");
 		String mail = request.getParameter("mail");
@@ -40,7 +43,7 @@ public class LoginServlet extends HttpServlet {
 			
 			request.setAttribute("errorMsg2","パスワードが入力されていません");
 		
-		} else { // エラー。無駄な処理はしない。修正
+		} // エラー。無駄な処理はしない。修正
 		
 			// ログイン処理の実行
 			Login login = new Login(mail,pass);
@@ -55,20 +58,22 @@ public class LoginServlet extends HttpServlet {
 			
 			// ログイン成功時
 			else { // 一致するユーザがある場合
-													
-				// セッションスコープにメールアドレスを保存。他のところでも使うので。
-				HttpSession session = request.getSession();
-				session.setAttribute("mail",mail);
-						
+				
+				String random_word = UUID.randomUUID().toString();
+				
+				// インタフェース型を利用するほうが幅広く使える
+				Map<String, String> map_mail = new HashMap<String, String>(); 
+				map_mail.put(random_word, mail);
+			    //              key        値
+				String login_mail = map_mail.get(random_word);
+				
+				request.setAttribute("login_mail",login_mail);
+				
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/attendance.jsp");
 				dispatcher.forward(request, response);
 						
 				return;
 			}		
-		}
-	
-		// ※リダイレクトだとリクエストとレスポンスが2往復してしまうため、
-		// リダイレクトからフォワードに変更。
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
 		dispatcher.forward(request, response);	
 	}

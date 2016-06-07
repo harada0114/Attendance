@@ -46,40 +46,35 @@ public class CreateStaffServlet extends HttpServlet {
 			ErrorMsgMail checkmail = m.checkMail(mail);
 			
 			switch (checkmail) {
-				case limit_mail:
+				case MAX_WORD:
 					request.setAttribute("errorMsg1","メールアドレスは半角英数40文字以内で入力してください");
 					break;	
-				case pattern_mail:
+				case NG_PATTERN:
 					request.setAttribute("errorMsg1","メールアドレスの形式が正しくありません");
 					break;
-				case blank_mail:
+				case BLANK:
 					request.setAttribute("errorMsg1","メールアドレスが入力されていません");
 					break;
-				case double_mail:
+				case DUPLICATE:
 					request.setAttribute("errorMsg1","このメールアドレスはすでに使用されています");
 					break;	
 				default:
 			}
 			
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");
-		
-		} catch (SQLException e) {
-			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");
+			request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
 		}
-		
-		
+
 		// パスワードチェック
 		CheckPass p = new CheckPass();
 		ErrorMsgPass checkpass = p.checkPass(pass);
 		
 		switch (checkpass) {
-			case limit_pass:
+			case MAX_WORD_PASS:
 				request.setAttribute("errorMsg2","パスワードは半角英数6文字で入力してください");
 				break;
-			case blank_pass:
+			case BLANK_PASS:
 				request.setAttribute("errorMsg2","パスワードが入力されていません");
 				break;
 			default:	
@@ -90,13 +85,13 @@ public class CreateStaffServlet extends HttpServlet {
 		ErrorMsgName checkname = n.checkName(name);
 				
 		switch (checkname) {
-			case limit_name:
+			case MAX_WORD_NAME:
 				request.setAttribute("errorMsg3","名前は20文字以内で入力してください");
 				break;
-			case space_name:
+			case SPACE_NAME:
 				request.setAttribute("errorMsg3","スペースは無効です");
 				break;
-			case blank_name:
+			case BLANK_NAME:
 				request.setAttribute("errorMsg3","名前が入力されていません");
 				break;
 			default:

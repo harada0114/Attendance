@@ -23,7 +23,6 @@ public class PostTimeLogic {
 		TimeDAO dao = new TimeDAO();
 		return dao.admission(time);
 		
-
 	}
 	
 	// 退社

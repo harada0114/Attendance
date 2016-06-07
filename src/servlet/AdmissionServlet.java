@@ -43,15 +43,9 @@ public class AdmissionServlet extends HttpServlet {
 				forwardPath = "/WEB-INF/jsp/attendance.jsp";
 			}	
 			
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。原田にご連絡ください");
-
-			forwardPath = "/WEB-INF/jsp/attendance.jsp";
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。原田にご連絡ください");
+			request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");
 
 			forwardPath = "/WEB-INF/jsp/attendance.jsp";
 		}

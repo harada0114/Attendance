@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public class CheckMail {
 	    
 	public enum ErrorMsgMail {
-		ok_mail,limit_mail,blank_mail,pattern_mail,double_mail,
+		OK, MAX_WORD, BLANK, NG_PATTERN, DUPLICATE,
 	}
 	
 	public ErrorMsgMail checkMail(String mail) throws ClassNotFoundException, SQLException {
@@ -16,22 +16,22 @@ public class CheckMail {
 		boolean double_mail = logic.execute(mail);
 			
 		// 40文字以内
-		if (mail.length() >= 41) {
-			return ErrorMsgMail.limit_mail;
+		if (mail.length() > 40) {
+			return ErrorMsgMail.MAX_WORD;
 			
 		// 空文字
 		} else if (mail.isEmpty()) {			
-			return ErrorMsgMail.blank_mail;
+			return ErrorMsgMail.BLANK;
 
 		// メールアドレス形式に一致しないなら
 		} else if (!mail.matches(pattern_mail)) {
-			return ErrorMsgMail.pattern_mail;
+			return ErrorMsgMail.NG_PATTERN;
 				
 		// メールアドレスの重複禁止
 		} else if (double_mail) {
-			return ErrorMsgMail.double_mail;
+			return ErrorMsgMail.DUPLICATE;
 		}
 			
-		return ErrorMsgMail.ok_mail; // チェックOK
+		return ErrorMsgMail.OK; // チェックOK
 	}	
 }

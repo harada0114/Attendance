@@ -13,7 +13,7 @@ import model.Login;
 public class StaffDAO {
 	
 	// 重複メールアドレスチェック
-	public boolean doubleMail(String mail) throws ClassNotFoundException,SQLException {
+	public boolean isdoubleMail(String mail) throws ClassNotFoundException,SQLException {
 			
 		Connection conn = null;		
 		Class.forName("com.mysql.jdbc.Driver");	

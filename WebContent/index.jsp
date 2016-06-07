@@ -2,8 +2,8 @@
     pageEncoding="UTF-8" %>
     
     <%
-    // リクエストスコープに保存されたエラーメッセージを取得
     String errorMsg1 = (String) request.getAttribute("errorMsg1");
+    String errorMsg2 = (String) request.getAttribute("errorMsg2");
     
  	String okMsg1 = (String) request.getAttribute("okMsg1");
     %>
@@ -19,6 +19,10 @@
 	
 	<% if (errorMsg1 != null) { %>
 	<%= errorMsg1 %><br>
+	<% } %>
+	
+	<% if (errorMsg2 != null) { %>
+	<%= errorMsg2 %><br>
 	<% } %>
 	
 	<% if (okMsg1 != null) { %>
