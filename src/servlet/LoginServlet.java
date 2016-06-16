@@ -1,7 +1,10 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.UUID;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,9 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.CheckMail;
+import model.CheckPass;
 import model.Login;
 import model.LoginLogic;
 import model.Staff;
+import model.CheckMail.ErrorMsgMail;
+import model.CheckPass.ErrorMsgPass;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
@@ -27,54 +34,73 @@ public class LoginServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		
 		request.setCharacterEncoding("UTF-8");
 		String mail = request.getParameter("mail");
 		String pass = request.getParameter("pass");
 		
-		// 入力パラメータチェック
-		// メールアドレスが空白なら
-		if (mail.equals("")) {
-			
-			request.setAttribute("errorMsg1","メールアドレスが入力されていません");
+		String forwardPath = "";
+		
+		// メールチェック	
+		CheckMail m = new CheckMail();
+		ErrorMsgMail check_mail = m.checkMail(mail);
+	
+		switch (check_mail) {
+			case OK:
+				break;
+			default:
+				request.setAttribute("errorMsg1","ログインに失敗しました");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
+				dispatcher.forward(request, response);
+				return;
 		}
-			// パスワードが空白なら
-		if (pass.equals("")) {
+		
+		// パスワードチェック
+		CheckPass p = new CheckPass();
+		ErrorMsgPass check_pass = p.checkPass(pass);
 			
-			request.setAttribute("errorMsg2","パスワードが入力されていません");
-		
-		} // エラー。無駄な処理はしない。修正
-		
-			// ログイン処理の実行
+		switch (check_pass) {
+			case OK:
+				break;
+			default:	
+				request.setAttribute("errorMsg1","ログインに失敗しました");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
+				dispatcher.forward(request, response);	
+				return;
+		}							
+			
+		// ログイン処理の実行
+		try {
 			Login login = new Login(mail,pass);
 			LoginLogic bo = new LoginLogic();
-			boolean result = bo.execute(login);
-			
-			// ログイン失敗時
-			if (!result) { // 一致するユーザがない場合
+			Staff staff = bo.execute(login);
+						
+			if (staff == null) {   // 一致するユーザがない
+				request.setAttribute("errorMsg1","ログインに失敗しました");
+				forwardPath = "/index.jsp";
 				
-				request.setAttribute("errorMsg3","一致するアカウントが存在しません");
-			}
-			
-			// ログイン成功時
-			else { // 一致するユーザがある場合
-				
+			} else {   // 一致するユーザがある	
 				String random_word = UUID.randomUUID().toString();
 				
-				// インタフェース型を利用するほうが幅広く使える
-				Map<String, String> map_mail = new HashMap<String, String>(); 
-				map_mail.put(random_word, mail);
-			    //              key        値
-				String login_mail = map_mail.get(random_word);
+				Map<String, String> account = new HashMap<String, String>();
+				account.put(random_word, staff.getMail());
 				
-				request.setAttribute("login_mail",login_mail);
+				request.setAttribute("random_word",random_word);
 				
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/attendance.jsp");
-				dispatcher.forward(request, response);
+				// Map型accountインスタンスを別のサーブレットで使うためにセッションスコープで保存。
+				HttpSession session = request.getSession();
+				session.setAttribute("account", account);
+				session.setAttribute("staff.getName()",staff.getName());
+							
+				forwardPath = "/WEB-INF/jsp/attendance.jsp";
+			}
 						
-				return;
-			}		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
-		dispatcher.forward(request, response);	
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
+			forwardPath = "/index.jsp";
+		}
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);
+		dispatcher.forward(request, response);
 	}
 }

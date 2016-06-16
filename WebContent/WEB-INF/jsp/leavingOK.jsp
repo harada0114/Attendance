@@ -7,6 +7,9 @@
     Date today = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     String now = sdf.format(today);
+    
+    String random_word = (String) request.getAttribute("random_word");
+    String name = (String) session.getAttribute("staff.getName()");
     %>
 
 <!DOCTYPE html>
@@ -18,8 +21,11 @@
 <body>
 
 	<p><%= now %>　に退社しました。<br>
-	${mail}さん、お疲れさまでした！</p>
-	<a href="/Attendance/MainServlet">戻る</a>
+	<%= name %>さん、お疲れさまでした！</p>
+	<form action="/Attendance//MainServlet" method="post">
+		<input type="hidden" name="mail" value="<%= random_word %>">
+		<input type="submit" name="MySubmit" value="戻る">
+	</form>
 
 </body>
 </html>

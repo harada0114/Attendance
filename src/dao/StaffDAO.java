@@ -12,58 +12,84 @@ import model.Login;
 
 public class StaffDAO {
 	
-	// 重複メールアドレスチェック
-	public boolean isdoubleMail(String mail) throws ClassNotFoundException,SQLException {
-			
-		Connection conn = null;		
-		Class.forName("com.mysql.jdbc.Driver");	
-		conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-			
-		String sql = "SELECT mail FROM staff WHERE mail=?";
-		PreparedStatement pStmt = conn.prepareStatement(sql);
-		pStmt.setString(1, mail);
-							
-		ResultSet rs = pStmt.executeQuery();
-						
-		// 同じメールアドレスが取得できれば
-		if (rs.next()) {
-			return true;
+	// 静的初期化ブロック。このクラスが利用されるときに一度だけ実行される。
+	// ドライバのロードは1度だけ実行されれば良い。
+	// ？
+	
+	/*
+	static {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-		if (conn != null) {
-			conn.close();
+	}
+	*/
+	
+	// メールアドレス重複チェックメソッド
+	public boolean isDoubleMail(String mail) throws ClassNotFoundException,SQLException {
+		
+		Connection conn = null;
+		
+		try {	
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+			
+			// 入力されたメールアドレスで検索
+			String sql = "SELECT mail FROM staff WHERE mail=?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, mail);
+							
+			ResultSet rs = pStmt.executeQuery();
+						
+			// 同じメールアドレスが取得できれば
+			if (rs.next()) {
+				return true;
+			} 
+		
+		// 必ずDBを切断
+		} finally { 
+			if (conn != null) {
+				conn.close();
+			}
 		}
 		return false;		
-	}
+	}	
 		
-		
-	// 新規登録
+	// 新規登録メソッド
 	public boolean createStaff(Staff staff) throws ClassNotFoundException, SQLException {
 		
 		Connection conn = null;
-		Class.forName("com.mysql.jdbc.Driver");
-		conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-		    	
-		String sql = "INSERT INTO staff(mail,pass,name) VALUES(?,?,?)";
-	    PreparedStatement pStmt = conn.prepareStatement(sql);
-	    pStmt.setString(1, staff.getMail());
-	    pStmt.setString(2, staff.getPass());
-	    pStmt.setString(3, staff.getName());
 		
-	    int result = pStmt.executeUpdate();
-				
-	    if (result != 1) {
-	    	return false;
-		}
-	    
-		if (conn != null) {
-			conn.close();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		    
+			// メール、パス、名前でレコード追加
+			String sql = "INSERT INTO staff(mail,pass,name) VALUES(?,?,?)";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, staff.getMail());
+			pStmt.setString(2, staff.getPass());
+			pStmt.setString(3, staff.getName());
+		
+			int result = pStmt.executeUpdate();
+		
+			// 追加できなければ
+			if (result != 1) {
+				return false;
+			}
+			
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
 		}
 		return true;
 	}
 		
 		
-	// ログインチェックメソッド
-	public Staff findByLogin(Login login) {
+	// ログインメソッド
+	public Staff findByLogin(Login login) throws ClassNotFoundException, SQLException {
 		
 		Staff staff = null;
 		Connection conn = null;
@@ -71,7 +97,6 @@ public class StaffDAO {
 		try {
 			
 			Class.forName("com.mysql.jdbc.Driver");
-			
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 			
 			String sql = "SELECT mail, pass, name FROM staff WHERE mail=? AND pass=?";
@@ -81,7 +106,7 @@ public class StaffDAO {
 			
 		    ResultSet rs = pStmt.executeQuery();
 		    
-		    // 取得した結果、一致したユーザが存在した場合 //
+		    // 一致したユーザが取得できれば
 		    if (rs.next()) { 
 		    	String mail = rs.getString("mail");
 		    	String pass = rs.getString("pass");
@@ -90,25 +115,11 @@ public class StaffDAO {
 		    	staff = new Staff(mail,pass,name);
 		    }
 
-		// 例外処理
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-			
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		
 		} finally {
 			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-					return null;
-				}
+				conn.close();	
 			}
-		}		
+		}
 		return staff;
 	}
 }

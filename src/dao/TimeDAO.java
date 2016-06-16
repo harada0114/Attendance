@@ -8,154 +8,165 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.ErrorMessage.MsgLeaving;
 import model.Time;
 
 public class TimeDAO {
 	
-	// 出社処理
-	
-	// メールと日付で検索し結果を得るメソッドをここに作成し、
-	// 出勤を押されたらinsertの前にそのメソッドを呼ぶようにしてみようか？
-	
-	public boolean admission(Time time) throws ClassNotFoundException,SQLException {
+	// 出社
+	// trueで出社できる、falseで出社できない
+	public boolean canAdmission(Time time) throws ClassNotFoundException,SQLException {
 		
 		Connection conn = null;	
+
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-						
+			Class.forName("com.mysql.jdbc.Driver");			
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-							
-			// 同日で出社済みか検索。連続して出社できない。
+			
 			String sql = "SELECT admission FROM time WHERE mail=? AND day=?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, time.getMail());
 			pStmt.setString(2, time.getDay());
-				
+			
 			ResultSet rs = pStmt.executeQuery();
 			
-			// 同日の出社レコードが取得できれば
 			if (rs.next()) {
-				//String admission = rs.getString("admission");			
-		  		return false;
-		  	}
-		  	
-			String sql2 = "INSERT INTO time(mail,day,admission) VALUES(?,?,?)";
-			PreparedStatement pStmt2 = conn.prepareStatement(sql2);
-			pStmt2.setString(1, time.getMail());
-			pStmt2.setString(2, time.getDay());
-			pStmt2.setString(3, time.getAdmission());
+				System.out.println("出社が被っています。エラーです");
+		  		return false; // 出勤が被っています。OUT
+			}
 			
-			int result = pStmt2.executeUpdate();
+			else {			
+				String sql1 = "INSERT INTO time(mail,day,admission) VALUES(?,?,?)";
+				PreparedStatement pStmt1 = conn.prepareStatement(sql1);
+				pStmt1.setString(1, time.getMail());
+				pStmt1.setString(2, time.getDay());
+				pStmt1.setString(3, time.getAdmission());
 			
-			// もしすでにレコードがあり、一件もINSERTできなければ
-			if (result != 1) {	
-				return false;
+				int result = pStmt1.executeUpdate();
+			
+				// もし一件もINSERTできなければ
+				if (result != 1) {	
+					System.out.println("INSERTできませんでした。エラーです");
+					return false;
+				}
 			}
 		} finally {
 			if (conn != null) {
 				conn.close();
 			}	
 		}
-		return true; // 出社可能です
+		return true; // 出勤OK
 	}
+			
+
 	
-	// DB退社処理		
-	public int leaving(Time time) throws ClassNotFoundException,SQLException {
-		Connection conn = null;
+	// 退社
+	// 実行状態によりメッセージを返す
+	public MsgLeaving runLeaving(Time time) throws ClassNotFoundException,SQLException {
 		
+		Connection conn = null;
+		String leaving = "";
+		int count = 0;
+		
+		try {
 			Class.forName("com.mysql.jdbc.Driver");
-						
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-				
-			// 同日で退社済みか検索。連続して退社できない。
-			String sql3 = "SELECT leaving FROM time WHERE mail=? AND day=?";
-			PreparedStatement pStmt3 = conn.prepareStatement(sql3);
-			pStmt3.setString(1, time.getMail());
-			pStmt3.setString(2, time.getDay());
-				
-			ResultSet rs3 = pStmt3.executeQuery();
-			    
-			// 同日の退社レコードが取得できれば
-			if (rs3.next()) {
-				String leaving = rs3.getString("leaving");
-			    	
-				// 取得したleavingの値がnullじゃないならすでに出社済み。// null直したい
-				if (leaving != null) {
-				  return 1;
-				}
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");	
+			
+			String sql = "SELECT leaving FROM time WHERE mail=? AND day=?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, time.getMail());
+			pStmt.setString(2, time.getDay());
+			
+			ResultSet rs = pStmt.executeQuery();
+			
+			while (rs.next()) { // ヒットした件数分回す
+				leaving = rs.getString("leaving");
+				count++;
+				System.out.println("退社検索ヒットしました。leaving ("+leaving+")、count ("+count+")");
 			}
 			
-			// ログインしているメールアドレスと日付が同じ出社レコードを検索して、
-			// 一致したレコードがあれば退社を更新する。
-			String sql4 = "SELECT mail, day FROM time WHERE mail=? AND day=?";
-			PreparedStatement pStmt4 = conn.prepareStatement(sql4);
-			pStmt4.setString(1, time.getMail());
-			pStmt4.setString(2, time.getDay());
+			// ヒットしていない場合、ここからの処理になる。
 	
-		    ResultSet rs4 = pStmt4.executeQuery();
-			    
-			// もし同日の出社レコードが一致した場合
-			if (rs4.next()) {
-				String mail = rs4.getString("mail");
-				String day = rs4.getString("day");
-					    	
-			    time = new Time(mail,day,time.getAdmission(),time.getLeaving());
-			    
-				String sqlB = "UPDATE time SET leaving=? WHERE mail=? AND day=?";		
-				PreparedStatement pStmtB = conn.prepareStatement(sqlB);
-				pStmtB.setString(1, time.getLeaving());
-				pStmtB.setString(2, time.getMail());
-				pStmtB.setString(3, time.getDay());
-					    	
-				int result = pStmtB.executeUpdate();
-			
-				// もし、一件も更新できなければ
-				if (result != 1) {
-					return 0;
-				}
-				
-			// もし同日の出社レコードが一致しなかった場合
-			} else {
-				return 2;
+			// 出社でINSERTされていません。
+			if (count == 0) {
+				System.out.println("出社されていません。leaving ("+leaving+")、count ("+count+")");
+				return MsgLeaving.NOT_ADMISSION;
+			}
+			// 2件以上はDBの内部的エラーです。
+			if (count >= 2) {
+				System.out.println("DBエラーです。leaving ("+leaving+")、count ("+count+")");
+				return MsgLeaving.SYSTEM_ERROR;
+			}
+			// 退社済みです。
+			if (count == 1 && leaving != null) {
+				System.out.println("退社済みです。leaving ("+leaving+")、count ("+count+")");
+				return MsgLeaving.ALREADY;
 			}
 			
+			else {
+				// 退社準備OK	
+				System.out.println("退社OK。leaving ("+leaving+")、count ("+count+")");
+				
+				String sql2 = "UPDATE time SET leaving=? WHERE mail=? AND day=?";		
+				PreparedStatement pStmt2 = conn.prepareStatement(sql2);
+				pStmt2.setString(1, time.getLeaving());
+				pStmt2.setString(2, time.getMail());
+				pStmt2.setString(3, time.getDay());
+						    	
+				int result = pStmt2.executeUpdate();
+
+				// もしも更新できなければ
+				if (result != 1) {
+					System.out.println("更新ができませんでした。");
+					return MsgLeaving.SYSTEM_ERROR;
+				}
+			}
+		} finally {
 			if (conn != null) {
 				conn.close();
 			}
-		return 3; // 退社登録OK		
+		}
+		return MsgLeaving.OK; // 退社OK
 	}
 			
-	// DB一覧表示処理
+	
+	
+	// 一覧表示処理
+	// DBから取得したレコードを格納したインスタンスを返す
 	public List<Time> findAll(Time time) throws ClassNotFoundException,SQLException {
 			
 		List<Time> timeList = new ArrayList<Time>();
 		
 		Connection conn = null;
-		Class.forName("com.mysql.jdbc.Driver");				
-		conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 		
-		// メールアドレスが同じ全レコードを検索
-		String sql = "SELECT mail,day,admission,leaving FROM time WHERE mail=?";
-		PreparedStatement pStmt = conn.prepareStatement(sql);
-		pStmt.setString(1, time.getMail());
+		try {
+			Class.forName("com.mysql.jdbc.Driver");				
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		
+			// メールアドレスで検索し全レコードを取得
+			String sql = "SELECT mail,day,admission,leaving FROM time WHERE mail=?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			pStmt.setString(1, time.getMail());
 			    			
-		ResultSet rs = pStmt.executeQuery();
+			ResultSet rs = pStmt.executeQuery();
 			    
-		// 結果をArrayListに格納
-		while (rs.next()) { // 回す
-			String mail = rs.getString("mail");
-		 	String day = rs.getString("day");
-			String admission = rs.getString("admission");
-			String leaving = rs.getString("leaving");
+			// 取得できれば結果をArrayListに格納
+			while (rs.next()) {
+				String mail = rs.getString("mail");
+				String day = rs.getString("day");
+				String admission = rs.getString("admission");
+				String leaving = rs.getString("leaving");
 
-			Time find_time = new Time(mail,day,admission,leaving);
+				Time find_time = new Time(mail, day, admission, leaving);
 			    	
-			// timeListにレコードを順番に詰める
-			timeList.add(find_time);
+				// timeListにレコードを順番に詰める
+				timeList.add(find_time);
+			}
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
 		}
-		if (conn != null) {
-			conn.close();
-		}
-		return timeList;
+		return timeList; // DBから取得したレコードが入ったtimeListを返す
 	}
 }

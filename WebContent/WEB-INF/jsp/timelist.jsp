@@ -5,14 +5,12 @@
     
     <%
     // リクエストスコープに保存されたレコード情報を取得:暗黙オブジェクトのrequest
-    List<Time> timeList = (List<Time>) request.getAttribute("timeList");   
+    List<Time> timeList = (List<Time>) request.getAttribute("timeList");
     
-    //SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd/ HH:mm");
-    //String str2 = sdf1.format(timeList); // 2011年06月15日 04時49分
-    
+    String random_word = (String) request.getAttribute("random_word");
+    String name = (String) session.getAttribute("staff.getName()");
     %>
-    
-    
+ 
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,11 +18,12 @@
 <title>勤怠状況</title>
 </head>
 <body>
-
-	<p>${mail}さんの勤怠状況です</p>
-	<a href="/Attendance/MainServlet">戻る</a><br>
+	<p><%= name %>さんの勤怠状況です。</p>
+	<form action="/Attendance//MainServlet" method="post">
+		<input type="hidden" name="mail" value="<%= random_word %>">
+		<input type="submit" name="MySubmit" value="戻る">
+	</form>
 	<br>
-	
 	<table border="2">
 	<tr><th>日時</th><th>出社時間</th><th>退社時間</th></tr>
 	<!-- レコードの表示 -->
@@ -32,7 +31,5 @@
 	<tr><td><%= time.getDay() %></td><td><%= time.getAdmission() %></td><td><%= time.getLeaving() %></td></tr>
 	<% } %>
 	</table>
-
-
 </body>
 </html>

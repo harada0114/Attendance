@@ -3,9 +3,8 @@
     
     <%
     String errorMsg1 = (String) request.getAttribute("errorMsg1");
-    String errorMsg2 = (String) request.getAttribute("errorMsg2");
     
- 	String okMsg1 = (String) request.getAttribute("okMsg1");
+    String errorMsg_system = (String) request.getAttribute("errorMsg_system");
     %>
     
 <!DOCTYPE html>
@@ -17,16 +16,12 @@
 <body>
 	<h1>勤怠管理</h1>
 	
-	<% if (errorMsg1 != null) { %>
+	<% if (errorMsg1 != null && errorMsg_system == null) { %>
 	<%= errorMsg1 %><br>
 	<% } %>
 	
-	<% if (errorMsg2 != null) { %>
-	<%= errorMsg2 %><br>
-	<% } %>
-	
-	<% if (okMsg1 != null) { %>
-	<%= okMsg1 %><br>
+	<% if (errorMsg_system != null) { %>
+	<%= errorMsg_system %><br>
 	<% } %>
 	
 	<br>
