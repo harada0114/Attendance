@@ -28,9 +28,7 @@ public class LeavingServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String forwardPath = "";
-		
-		String random_word = request.getParameter("mail");
+		String random_word = request.getParameter("random_word");
 		request.setCharacterEncoding("UTF-8");
 		
 		HttpSession session = request.getSession();
@@ -39,23 +37,26 @@ public class LeavingServlet extends HttpServlet {
 
 		Date today = new Date();
 		
+		String forwardPath = "";
+		String errorMsg = "";
+		
 		try {
 			PostLeavingLogic postLeavingLogic = new PostLeavingLogic();
 			MsgLeaving result_leaving = postLeavingLogic.execute(mail, today);
 
 			switch (result_leaving) {
 				case ALREADY:
-					request.setAttribute("errorMsg1","本日はすでに退社済みです");
+					errorMsg = "本日はすでに退社済みです";
 					forwardPath = "/WEB-INF/jsp/attendance.jsp";
 					break;
 	
 				case NOT_ADMISSION:
-					request.setAttribute("errorMsg1","本日の出社の確認ができませんでした。出社後、退社ボタンを押してください");
+					errorMsg = "本日の出社の確認ができませんでした。出社後、退社ボタンを押してください";
 					forwardPath = "/WEB-INF/jsp/attendance.jsp";
 					break;
 					
 				case SYSTEM_ERROR:
-					request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
+					errorMsg = "システムエラーが発生しました。管理者にご連絡ください";
 					forwardPath = "/WEB-INF/jsp/attendance.jsp";
 					break;
 					
@@ -65,11 +66,12 @@ public class LeavingServlet extends HttpServlet {
 			}
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
+			errorMsg = "システムエラーが発生しました。管理者にご連絡ください";
 			forwardPath = "/WEB-INF/jsp/attendance.jsp";
 		}
-
+		
 		request.setAttribute("random_word",random_word);
+		request.setAttribute("errorMsg",errorMsg);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);
 		dispatcher.forward(request, response);	

@@ -23,7 +23,7 @@
 	<p><%= now %>　に退社しました。<br>
 	<%= name %>さん、お疲れさまでした！</p>
 	<form action="/Attendance//MainServlet" method="post">
-		<input type="hidden" name="mail" value="<%= random_word %>">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" name="MySubmit" value="戻る">
 	</form>
 

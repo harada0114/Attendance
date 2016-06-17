@@ -19,7 +19,7 @@ public class MainServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		
-		String random_word = request.getParameter("mail");
+		String random_word = request.getParameter("random_word");
 		request.setCharacterEncoding("UTF-8");
 		
 		request.setAttribute("random_word",random_word);

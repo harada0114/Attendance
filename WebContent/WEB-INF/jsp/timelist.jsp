@@ -20,7 +20,7 @@
 <body>
 	<p><%= name %>さんの勤怠状況です。</p>
 	<form action="/Attendance//MainServlet" method="post">
-		<input type="hidden" name="mail" value="<%= random_word %>">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" name="MySubmit" value="戻る">
 	</form>
 	<br>

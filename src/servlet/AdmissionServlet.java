@@ -20,16 +20,12 @@ public class AdmissionServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/attendance.jsp");
-		dispatcher.forward(request, response);
+	
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String forwardPath = "";
-
-		String random_word = request.getParameter("mail");
+		String random_word = request.getParameter("random_word");
 		request.setCharacterEncoding("UTF-8");
 		
 		HttpSession session = request.getSession();
@@ -39,6 +35,9 @@ public class AdmissionServlet extends HttpServlet {
 		
 		// フォーマットはモデルにさせる
 		Date today = new Date();
+		
+		String forwardPath = "";
+		String errorMsg = "";
 			
 		try {
 			PostAdmissionLogic postAdmissionLogic = new PostAdmissionLogic();
@@ -46,22 +45,23 @@ public class AdmissionServlet extends HttpServlet {
 			
 			// 出社できれば画面遷移します
 			if (canAdmission) {
-				forwardPath = "/WEB-INF/jsp/admissionOK.jsp";
 				request.setAttribute("random_word",random_word);
+				forwardPath = "/WEB-INF/jsp/admissionOK.jsp";
 			
 			// できなければエラーメッセージ出力
 			} else {
-				request.setAttribute("errorMsg1","本日はすでに出社済みです");
+				errorMsg ="本日はすでに出社済みです";
 				forwardPath = "/WEB-INF/jsp/attendance.jsp";
 			}	
 		
 		// 例外処理
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg1","システムエラーが発生しました。管理者にご連絡ください");
+			errorMsg = "システムエラーが発生しました。管理者にご連絡ください";
 			forwardPath = "/WEB-INF/jsp/attendance.jsp";
 		}
 		
+		request.setAttribute("errorMsg",errorMsg);
 		// 二度目以降もmailに値が入るように保存
 		request.setAttribute("random_word",random_word);
 		

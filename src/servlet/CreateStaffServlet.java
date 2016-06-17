@@ -39,33 +39,37 @@ public class CreateStaffServlet extends HttpServlet {
 		String pass = request.getParameter("pass");
 		String name = request.getParameter("name");
 		
+		String errorMsg_mail = "";
+		String errorMsg_pass = "";
+		String errorMsg_name = "";
+		
 		// メールチェック		
 		CheckMail m = new CheckMail();
 		ErrorMsgMail check_mail = m.checkMail(mail);
-			
+		
 		switch (check_mail) {
 			case MAX_WORD:
-				request.setAttribute("errorMsg1","メールアドレスは半角英数40文字以内で入力してください");
+				errorMsg_mail = "メールアドレスは半角英数40文字以内で入力してください";
 				break;	
 			case NG_PATTERN:
-				request.setAttribute("errorMsg1","メールアドレスの形式が正しくありません");
+				errorMsg_mail = "メールアドレスの形式が正しくありません";
 				break;
 			case BLANK:
-				request.setAttribute("errorMsg1","メールアドレスが入力されていません");
+				errorMsg_mail = "メールアドレスが入力されていません";
 				break;
 			default:
 		}
 			
 		// 重複チェック
 		try {
-			boolean check_duplicate_mail = m.duplicate(mail);
+			boolean check_duplicate_mail = m.duplicate(mail) ;
 
 			if (check_duplicate_mail) {
-				request.setAttribute("errorMsg1","このメールアドレスはすでに使用されています");
+				errorMsg_mail = "このメールアドレスはすでに使用されています";
 			}
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
+			errorMsg_mail = "システムエラーが発生しました。管理者にご連絡ください";
 		}
 
 		// パスワードチェック
@@ -74,10 +78,10 @@ public class CreateStaffServlet extends HttpServlet {
 		
 		switch (check_pass) {
 			case MAX_WORD:
-				request.setAttribute("errorMsg2","パスワードは半角英数6文字で入力してください");
+				errorMsg_pass = "パスワードは半角英数6文字で入力してください";
 				break;
 			case BLANK:
-				request.setAttribute("errorMsg2","パスワードが入力されていません");
+				errorMsg_pass = "パスワードが入力されていません";
 				break;
 			default:	
 		}
@@ -88,19 +92,23 @@ public class CreateStaffServlet extends HttpServlet {
 				
 		switch (check_name) {
 			case MAX_WORD:
-				request.setAttribute("errorMsg3","名前は20文字以内で入力してください");
+				errorMsg_name = "名前は20文字以内で入力してください";
 				break;
 			case SPACE:
-				request.setAttribute("errorMsg3","スペースは無効です");
+				errorMsg_name = "スペースは無効です";
 				break;
 			case BLANK:
-				request.setAttribute("errorMsg3","名前が入力されていません");
+				errorMsg_name = "名前が入力されていません";
 				break;
 			default:
 		}
 		
 		Staff entryStaff = new Staff(mail,pass,name);
 		request.setAttribute("entryStaff", entryStaff);
+		
+		request.setAttribute("errorMsg_mail", errorMsg_mail);
+		request.setAttribute("errorMsg_pass", errorMsg_pass);
+		request.setAttribute("errorMsg_name", errorMsg_name);
 				
 		// 確認画面へ
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/entryConfirm.jsp");

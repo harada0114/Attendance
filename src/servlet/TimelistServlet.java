@@ -24,15 +24,11 @@ public class TimelistServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/attendance.jsp");
-		dispatcher.forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
-		String forwardPath = "";
 		
-		String random_word = request.getParameter("mail");
+		String random_word = request.getParameter("random_word");
 		request.setCharacterEncoding("UTF-8");
 		
 		HttpSession session = request.getSession();
@@ -40,6 +36,9 @@ public class TimelistServlet extends HttpServlet {
 		String mail = account.get(random_word);
 
 		Date today = new Date();
+		
+		String forwardPath = "";
+		String errorMsg = "";
 		
 		try {
 			GetListLogic getListLogic = new GetListLogic();
@@ -51,10 +50,11 @@ public class TimelistServlet extends HttpServlet {
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
+			errorMsg = "システムエラーが発生しました。管理者にご連絡ください";
 			forwardPath = "/WEB-INF/jsp/attendance.jsp";
 		}
 		
+		request.setAttribute("errorMsg",errorMsg);
 		request.setAttribute("random_word",random_word);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);
