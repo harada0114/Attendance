@@ -10,8 +10,6 @@
 	String errorMsg_mail = (String) request.getAttribute("errorMsg_mail");
 	String errorMsg_pass = (String) request.getAttribute("errorMsg_pass");
 	String errorMsg_name = (String) request.getAttribute("errorMsg_name");
-	
-	String errorMsg = (String) request.getAttribute("errorMsg");
 %>
     
 <!DOCTYPE html>
@@ -22,23 +20,19 @@
 </head>
 <body>
 
-	<% if (errorMsg_mail != null && errorMsg == null) { %>
+	<% if (errorMsg_mail != "") { %>
 	<%= errorMsg_mail %><br>
 	<% } %>
 	
-	<% if (errorMsg_pass != null && errorMsg == null) { %>
+	<% if (errorMsg_pass != "") { %>
 	<%= errorMsg_pass %><br>
 	<% } %>
 	
-	<% if (errorMsg_name != null && errorMsg == null) { %>
+	<% if (errorMsg_name != "") { %>
 	<%= errorMsg_name %><br>
 	<% } %>
-	
-	<% if (errorMsg != null) { %>
-	<%= errorMsg %><br>
-	<% } %>
 
-	<% if (errorMsg_mail == null && errorMsg_pass == null && errorMsg_name == null && errorMsg == null) { %>
+	<% if (errorMsg_mail == "" && errorMsg_pass == "" && errorMsg_name == "") { %>
 	<p>下記のユーザを登録します</p>
 	メールアドレス：<%= entryStaff.getMail() %><br>
 	パスワード　　：●●●●●●<br>
