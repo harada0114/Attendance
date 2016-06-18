@@ -38,9 +38,14 @@
 	パスワード　　：●●●●●●<br>
 	名前　　　　　：<%= entryStaff.getName() %><br>
 	<br>
-	<form action="/Attendance/SendCreateStaffServlet?mail=<%= entryStaff.getMail() %>&pass=<%= entryStaff.getPass() %>&name=<%= entryStaff.getName() %>" method="post">
-	<input type="submit" value="登録">
+	
+	<form action="/Attendance/SendCreateStaffServlet" method="post">
+		<input type="hidden" name="mail" value="<%= entryStaff.getMail() %>">
+		<input type="hidden" name="pass" value="<%= entryStaff.getPass() %>">
+		<input type="hidden" name="name" value="<%= entryStaff.getName() %>">
+		<input type="submit" value="登録">
 	</form>
+	
 	<% } %>
 	<a href="/Attendance/CreateStaffServlet">戻る</a>
 	

@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import model.ErrorMessage.MsgLeaving;
 import dao.TimeDAO;
+import dao.TimeDAO.MsgLeaving;
 
 public class PostLeavingLogic {
 	

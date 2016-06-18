@@ -8,12 +8,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.ErrorMessage.MsgLeaving;
 import model.Time;
+
 
 public class TimeDAO {
 	
-	// 出社
+	public enum MsgLeaving {
+		OK, ALREADY, NOT_ADMISSION, SYSTEM_ERROR,
+	}
+	
+	// 出社メソッド
 	// trueで出社できる、falseで出社できない
 	public boolean canAdmission(Time time) throws ClassNotFoundException,SQLException {
 		
@@ -60,7 +64,7 @@ public class TimeDAO {
 			
 
 	
-	// 退社
+	// 退社メソッド
 	// 実行状態によりメッセージを返す
 	public MsgLeaving runLeaving(Time time) throws ClassNotFoundException,SQLException {
 		
@@ -104,8 +108,8 @@ public class TimeDAO {
 			}
 			
 			else {
-				// 退社準備OK	
-				System.out.println("退社OK。leaving ("+leaving+")、count ("+count+")");
+				// 退社準備OK。更新します。
+				System.out.println("退社OK");
 				
 				String sql2 = "UPDATE time SET leaving=? WHERE mail=? AND day=?";		
 				PreparedStatement pStmt2 = conn.prepareStatement(sql2);
@@ -132,7 +136,7 @@ public class TimeDAO {
 	
 	
 	// 一覧表示処理
-	// DBから取得したレコードを格納したインスタンスを返す
+	// 取得したレコードを格納したtimeListインスタンスを返す
 	public List<Time> findAll(Time time) throws ClassNotFoundException,SQLException {
 			
 		List<Time> timeList = new ArrayList<Time>();
@@ -167,6 +171,6 @@ public class TimeDAO {
 				conn.close();
 			}
 		}
-		return timeList; // DBから取得したレコードが入ったtimeListを返す
+		return timeList;
 	}
 }

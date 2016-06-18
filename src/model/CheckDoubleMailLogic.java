@@ -10,11 +10,5 @@ public class CheckDoubleMailLogic {
 		
 		StaffDAO dao = new StaffDAO();
 		return dao.isDoubleMail(mail);
-	
-}
-	
-	
-	
-	
-
+	}
 }

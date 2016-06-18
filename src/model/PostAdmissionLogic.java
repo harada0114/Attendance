@@ -22,7 +22,6 @@ public class PostAdmissionLogic {
 		Time time = new Time (mail, day, admission, leaving);
 			
 		TimeDAO dao = new TimeDAO();
-		boolean canAdmission = dao.canAdmission(time);
-		return canAdmission;
+		return dao.canAdmission(time);
 	}
 }

@@ -12,7 +12,6 @@ public class GetListLogic {
 	
 	public List<Time> execute(String mail,Date today) throws ClassNotFoundException,SQLException {
 		
-		// ここでDate型をformatして渡す
 		SimpleDateFormat tdf = new SimpleDateFormat("yyyy/MM/dd");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 			
@@ -23,7 +22,6 @@ public class GetListLogic {
 		Time time = new Time (mail,day,admission,leaving);
 		
 		TimeDAO dao = new TimeDAO();
-		List<Time> timeList = dao.findAll(time);
-		return timeList;
+		return dao.findAll(time);
 	}
 }

@@ -2,9 +2,7 @@
     pageEncoding="UTF-8" %>
     
     <%
-    String errorMsg1 = (String) request.getAttribute("errorMsg1");
-    
-    String errorMsg_system = (String) request.getAttribute("errorMsg_system");
+    String msg = (String) request.getAttribute("msg");
     %>
     
 <!DOCTYPE html>
@@ -16,12 +14,8 @@
 <body>
 	<h1>勤怠管理</h1>
 	
-	<% if (errorMsg1 != null && errorMsg_system == null) { %>
-	<%= errorMsg1 %><br>
-	<% } %>
-	
-	<% if (errorMsg_system != null) { %>
-	<%= errorMsg_system %><br>
+	<% if (msg != null) { %>
+	<%= msg %><br>
 	<% } %>
 	
 	<br>

@@ -11,22 +11,9 @@ import model.Staff;
 import model.Login;
 
 public class StaffDAO {
-	
-	// 静的初期化ブロック。このクラスが利用されるときに一度だけ実行される。
-	// ドライバのロードは1度だけ実行されれば良い。
-	// ？
-	
-	/*
-	static {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	*/
-	
+		
 	// メールアドレス重複チェックメソッド
+	// アドレスがヒットすればtrue、しなければfalse
 	public boolean isDoubleMail(String mail) throws ClassNotFoundException,SQLException {
 		
 		Connection conn = null;
@@ -57,7 +44,8 @@ public class StaffDAO {
 	}	
 		
 	// 新規登録メソッド
-	public boolean createStaff(Staff staff) throws ClassNotFoundException, SQLException {
+	// レコードを追加できればtrue、できなければfalse
+	public boolean canCreateStaff(Staff staff) throws ClassNotFoundException, SQLException {
 		
 		Connection conn = null;
 		
@@ -89,13 +77,13 @@ public class StaffDAO {
 		
 		
 	// ログインメソッド
+	// 同じメール、パスがあるか確認し取得後、Staffインスタンスに格納し返す。
 	public Staff findByLogin(Login login) throws ClassNotFoundException, SQLException {
 		
 		Staff staff = null;
 		Connection conn = null;
 		
 		try {
-			
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 			

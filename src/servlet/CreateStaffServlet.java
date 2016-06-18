@@ -1,5 +1,3 @@
-// 新規登録サーブレット
-
 package servlet;
 
 import java.io.IOException;

@@ -8,26 +8,16 @@ public class Time implements Serializable {
 	private String day;         // 日付
 	private String admission;   // 出社日時
 	private String leaving;     // 退社日時
-	private String attendance;  // 出退勤状態
 	
 	public Time() {}
 	
-	public Time (String mail,String day,String admission, String leaving, String attendance) {
-		this.mail = mail;
-		this.day = day;
-		this.admission = admission;
-		this.leaving = leaving;
-		this.attendance = attendance;
-	}
-	
-	// 一覧用コンストラクタ
 	public Time (String mail,String day,String admission, String leaving) {
 		this.mail = mail;
 		this.day = day;
 		this.admission = admission;
 		this.leaving = leaving;
 	}
-
+	
 	public String getMail() {
 		return mail;
 	}
@@ -54,12 +44,5 @@ public class Time implements Serializable {
 	}
 	public void setLeaving(String leaving) {
 		this.leaving = leaving;
-	}
-	
-	public String getAttendance() {
-		return attendance;
-	}
-	public void setAttendance(String attendance) {
-		this.attendance = attendance;
 	}
 }

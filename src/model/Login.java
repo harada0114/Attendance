@@ -1,4 +1,3 @@
-// Login.java(model)
 package model;
 
 import java.io.Serializable;

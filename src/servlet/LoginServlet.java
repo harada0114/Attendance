@@ -38,6 +38,7 @@ public class LoginServlet extends HttpServlet {
 		String mail = request.getParameter("mail");
 		String pass = request.getParameter("pass");
 		
+		String msg = "";
 		String forwardPath = "";
 		
 		// メールチェック	
@@ -48,10 +49,8 @@ public class LoginServlet extends HttpServlet {
 			case OK:
 				break;
 			default:
-				request.setAttribute("errorMsg1","ログインに失敗しました");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
-				dispatcher.forward(request, response);
-				return;
+				msg = "ログインに失敗しました";
+				forwardPath = "/index.jsp";
 		}
 		
 		// パスワードチェック
@@ -61,21 +60,31 @@ public class LoginServlet extends HttpServlet {
 		switch (check_pass) {
 			case OK:
 				break;
-			default:	
-				request.setAttribute("errorMsg1","ログインに失敗しました");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
-				dispatcher.forward(request, response);	
-				return;
-		}							
+			default:
+				msg = "ログインに失敗しました";
+				forwardPath = "/index.jsp";
+		}
+		
+		if (!forwardPath.equals("")) {
 			
-		// ログイン処理の実行
+			request.setAttribute("msg", msg);
+			
+			RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);
+			dispatcher.forward(request, response);
+			return;
+		}
+
+		// ログイン処理
 		try {
+			
+			System.out.println("ログイン処理");
+			
 			Login login = new Login(mail,pass);
 			LoginLogic bo = new LoginLogic();
 			Staff staff = bo.execute(login);
 						
 			if (staff == null) {   // 一致するユーザがない
-				request.setAttribute("errorMsg1","ログインに失敗しました");
+				msg = "ログインに失敗しました";
 				forwardPath = "/index.jsp";
 				
 			} else {   // 一致するユーザがある	
@@ -86,7 +95,6 @@ public class LoginServlet extends HttpServlet {
 				
 				request.setAttribute("random_word",random_word);
 				
-				// Map型accountインスタンスを別のサーブレットで使うためにセッションスコープで保存。
 				HttpSession session = request.getSession();
 				session.setAttribute("account", account);
 				session.setAttribute("staff.getName()",staff.getName());
@@ -96,9 +104,11 @@ public class LoginServlet extends HttpServlet {
 						
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			request.setAttribute("errorMsg_system","システムエラーが発生しました。管理者にご連絡ください");
+			msg = "システムエラーが発生しました。管理者にご連絡ください";
 			forwardPath = "/index.jsp";
 		}
+		
+		request.setAttribute("msg", msg);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);
 		dispatcher.forward(request, response);
