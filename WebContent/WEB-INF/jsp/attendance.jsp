@@ -17,7 +17,7 @@
 </head>
 <body>
 	<p><%= name %>さんお疲れ様です。<br>
-	<a href="/Attendance/">ログアウト</a></p>
+	<a href="/Attendance/LogoutServlet">ログアウト</a></p>
 	
 	<% if (errorMsg != null) { %>
 	<%= errorMsg %><br>
