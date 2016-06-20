@@ -5,7 +5,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import model.Time;
@@ -69,13 +73,16 @@ public class TimeDAO {
 	public MsgLeaving runLeaving(Time time) throws ClassNotFoundException,SQLException {
 		
 		Connection conn = null;
+		// レコードから取得した値を入れる
 		String leaving = "";
+		// 件数のカウント
 		int count = 0;
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");	
 			
+			// 2重投稿にならないよう、すでに退社済みか確認
 			String sql = "SELECT leaving FROM time WHERE mail=? AND day=?";
 			PreparedStatement pStmt = conn.prepareStatement(sql);
 			pStmt.setString(1, time.getMail());
@@ -86,16 +93,84 @@ public class TimeDAO {
 			while (rs.next()) { // ヒットした件数分回す
 				leaving = rs.getString("leaving");
 				count++;
-				System.out.println("退社検索ヒットしました。leaving ("+leaving+")、count ("+count+")");
+				System.out.println("今日の退社レコードを確認しました。leaving ("+leaving+")、count ("+count+")");
 			}
 			
-			// ヒットしていない場合、ここからの処理になる。
+			// ヒットしていない場合、ここからの処理になる
 	
-			// 出社でINSERTされていません。
+			// 退社されていません(出社でINSERTされていません)
 			if (count == 0) {
-				System.out.println("出社されていません。leaving ("+leaving+")、count ("+count+")");
-				return MsgLeaving.NOT_ADMISSION;
+				// 日付をまたいだ退社かどうか確認
+				// 型変換用に昨日の日時を入れるための変数を2つ用意
+				Date yesterday_Dat = null;
+				String yesterday_Str = "";
+				
+				// 日付のフォーマット
+				SimpleDateFormat tdf = new SimpleDateFormat("yyyy/MM/dd");
+				
+				// 昨日の日付を用意
+				try {
+					// Calendar型を使うのでtime.getDay()をString型からDate型に変換し、1日引いて昨日にする						
+					Date date_time_getDay = tdf.parse(time.getDay());
+					
+					Calendar yesterday_Cal = Calendar.getInstance();
+					yesterday_Cal.setTime(date_time_getDay);
+					yesterday_Cal.add(Calendar.DAY_OF_MONTH, -1); // 1日引く
+					
+					yesterday_Dat = yesterday_Cal.getTime();
+				
+				// テキストを解析して日付を生成する際の予想外のエラー(例外処理)
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				
+				// setStringできるようにDate型からString型に戻す
+				yesterday_Str = tdf.format(yesterday_Dat);
+				
+				// 昨日の退社が確認できるか検索
+				String sql2 = "SELECT leaving FROM time WHERE mail=? AND day=?";
+				PreparedStatement pStmt2 = conn.prepareStatement(sql2);
+				pStmt2.setString(1, time.getMail());
+				pStmt2.setString(2, yesterday_Str);
+				
+				ResultSet rs2 = pStmt2.executeQuery();
+				
+				// ヒットしなければ
+				if (!rs2.next()) {
+					System.out.println("出社されていません(昨日の退社も確認できませんでした。今日の出社がされていないオチと判断します)");
+					return MsgLeaving.NOT_ADMISSION; // 今日の出社がされていないオチ
+				}
+				else {
+					String leaving2 = rs2.getString("leaving");
+					System.out.println("昨日の退社レコードを確認しました");
+					
+					// 取得したleaving2に退社時刻が入っていれば
+					if (leaving2 != null) {
+						System.out.println("出社されていません(昨日の退社は確認できましたが、日付が入っています。退社済みです。今日の出社がされていないオチと判断します)");
+						return MsgLeaving.NOT_ADMISSION; // 今日の出社がされていないオチ
+					}
+	
+					// それ以外なら昨日の日付を更新
+					System.out.println("今日の退社も確認できず、かつ昨日の退社はnullでした。日付をまたいだ退社と判断します");
+					
+					String sql3 = "UPDATE time SET leaving=? WHERE mail=? AND day=?";		
+					PreparedStatement pStmt3 = conn.prepareStatement(sql3);
+					pStmt3.setString(1, time.getLeaving());
+					pStmt3.setString(2, time.getMail());
+					pStmt3.setString(3, yesterday_Str); // 昨日の日付
+							    	
+					int result = pStmt3.executeUpdate();
+
+					// もしも更新できなければ
+					if (result != 1) {
+						System.out.println("更新ができませんでした。");
+						return MsgLeaving.SYSTEM_ERROR;
+					}
+
+				return MsgLeaving.OK;
 			}
+		}
+			
 			// 2件以上はDBの内部的エラーです。
 			if (count >= 2) {
 				System.out.println("DBエラーです。leaving ("+leaving+")、count ("+count+")");
