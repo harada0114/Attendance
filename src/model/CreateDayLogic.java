@@ -21,14 +21,13 @@ public class CreateDayLogic {
 				
 				// 前月及び翌月の箇所には勤怠表示しない
 				if (calendarDay[i] > 35) {
-	    		   sb.append("<td class='sche'></td>");
+	    		   sb.append("<td class='sche'></td>"); // 列を終わらす
 	               // [0][1][2]は35超えている(先月)ので、ifで処理が終わる
 	       	
 				} else {
 	       		// 配列[3]の中1からelse処理になり、iは[3]
 	               sb.append("<td class='sche'>");
-	               sb.append("<width='14' height='16'>"); // 枠の大きさ
-	               sb.append("</a><br>");
+	              // sb.append("<br>");
 
 	               // 勤怠表示部分
 	               sb.append("<span class='small'>");
@@ -41,12 +40,11 @@ public class CreateDayLogic {
 	               try {
 	            	   Time timeList = attendance.findAll(year, month, i, calendarDay, mail);
 	            	   
-	            	   if (timeList == null) {
-	            		   sb.append("<br>");
+	            	   // 表示用に値を加工
+	            	   ChangeString a = new ChangeString();
+	            	   String b = a.makeAdmission(timeList);
 	            	   
-	            	   } else {
-	            		   sb.append(timeList.getAdmission() + "<br>" + timeList.getLeaving() + "<br>");
-	            	   }
+	            	   sb.append(b);
 	            	   
 	               } catch (ClassNotFoundException | SQLException e) {
 	            	   e.printStackTrace();
