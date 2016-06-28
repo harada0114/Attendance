@@ -7,10 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import model.Time;
 
@@ -167,9 +165,9 @@ public class TimeDAO {
 						return MsgLeaving.SYSTEM_ERROR;
 					}
 
-				return MsgLeaving.OK;
+					return MsgLeaving.OK;
+				}
 			}
-		}
 			
 			// 2件以上はDBの内部的エラーです。
 			if (count >= 2) {
@@ -209,43 +207,48 @@ public class TimeDAO {
 	}
 			
 	
-	
-	// 一覧表示処理
-	// 取得したレコードを格納したtimeListインスタンスを返す
-	public List<Time> findAll(Time time) throws ClassNotFoundException,SQLException {
-			
-		List<Time> timeList = new ArrayList<Time>();
+	// 勤怠データ取得メソッド
+	// 取得した値をTimeインスタンスに格納し返す
+	public Time findAll(int year, int month, int i, int[] calendarDay, String mail) throws ClassNotFoundException,SQLException {
 		
+		Time find_time = null;
+
 		Connection conn = null;
-		
-		try {
+    
+		try { 	   
 			Class.forName("com.mysql.jdbc.Driver");				
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
-		
-			// メールアドレスで検索し全レコードを取得
-			String sql = "SELECT mail,day,admission,leaving FROM time WHERE mail=?";
-			PreparedStatement pStmt = conn.prepareStatement(sql);
-			pStmt.setString(1, time.getMail());
-			    			
-			ResultSet rs = pStmt.executeQuery();
-			    
-			// 取得できれば結果をArrayListに格納
-			while (rs.next()) {
-				String mail = rs.getString("mail");
+    	
+			String sql = "SELECT * FROM time WHERE mail=? AND day=?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+        
+			// 年、月、日 iは1ずつ増える
+			String startDateStr = year + "-" + (month + 1) + "-" + calendarDay[i];
+        
+			pstmt.setString(1, mail);
+			pstmt.setString(2, startDateStr);
+
+			System.out.println("startDateStr="+startDateStr);
+        
+			ResultSet rs = pstmt.executeQuery();
+
+			if(rs.next()) { 
 				String day = rs.getString("day");
 				String admission = rs.getString("admission");
 				String leaving = rs.getString("leaving");
-
-				Time find_time = new Time(mail, day, admission, leaving);
-			    	
-				// timeListにレコードを順番に詰める
-				timeList.add(find_time);
+			
+				System.out.println("データベースにヒット "+day);
+				System.out.println("admission="+admission);
+				System.out.println("leaving="+leaving);
+         	
+				find_time = new Time(mail, day, admission, leaving);
 			}
+				
 		} finally {
 			if (conn != null) {
 				conn.close();
 			}
 		}
-		return timeList;
+		return find_time; // ヒットしなければtimeインスタンスの中はnull
 	}
 }

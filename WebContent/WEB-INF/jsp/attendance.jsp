@@ -37,7 +37,7 @@
 	</form>
 	
 	<!-- 一覧 -->
-	<form action="/Attendance/TimelistServlet" method="post">
+	<form action="/Attendance/CalendarServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 	<input type="submit" name="MySubmit" value="勤怠状況">
 	</form>
