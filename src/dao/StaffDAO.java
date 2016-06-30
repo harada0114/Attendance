@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import dao.TimeDAO.MsgLeaving;
 import model.Staff;
 import model.Login;
 
@@ -106,6 +107,54 @@ public class StaffDAO {
 		} finally {
 			if (conn != null) {
 				conn.close();	
+			}
+		}
+		return staff;
+	}
+	
+	// アカウント更新メソッド
+	// 上書きしたStaffインスタンスを返す
+	public Staff UpDate(Staff staff, String column, String update_value) throws ClassNotFoundException, SQLException {
+
+		Connection conn = null;
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		    
+			// カラム名を変数に
+			String sql = "UPDATE staff SET " + column + " = ? WHERE mail = ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);					    	
+			pStmt.setString(1, update_value);
+			pStmt.setString(2, staff.getMail());
+			
+			int result = pStmt.executeUpdate();
+
+			// もしも更新できなければ
+			if (result != 1) {
+				System.out.println("更新ができませんでした。");
+				return staff;
+			
+			} else { 
+				String sql1 = "SELECT * FROM staff WHERE mail=?";
+			    PreparedStatement pStmt1 = conn.prepareStatement(sql1);
+			    pStmt1.setString(1, staff.getMail());
+			    
+			    ResultSet rs = pStmt1.executeQuery();
+
+			    // 変更後のアカウントを取得
+			    if (rs.next()) { 
+			    	String mail = rs.getString("mail");
+			    	String pass = rs.getString("pass");
+			    	String name = rs.getString("name");
+			    	
+			    	staff = new Staff(mail,pass,name);			    	
+			    }
+			}
+			
+		} finally {
+			if (conn != null) {
+				conn.close();
 			}
 		}
 		return staff;
