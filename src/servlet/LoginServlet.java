@@ -2,6 +2,8 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import model.CheckMail;
 import model.CheckPass;
@@ -90,14 +93,26 @@ public class LoginServlet extends HttpServlet {
 			} else {   // 一致するユーザがある	
 				String random_word = UUID.randomUUID().toString();
 				
-				Map<String, String> account = new HashMap<String, String>();
+				HttpSession session = request.getSession();
+				// セッションからとってきたaccountの型で変数を作ってるだけ 
+				// 最初、セッションスコープのaccount自体保存されていないので"null"になる
+				Map<String, String> account = (Map<String, String>) session.getAttribute("account");
+				
+				// HashMap上書き防止
+				if (account == null) {
+					account = new HashMap<String, String>();
+					System.out.println("ifの中="+random_word);
+				}
+				
 				account.put(random_word, staff.getMail());
 				
+				System.out.println("ifの外="+random_word);
 				request.setAttribute("random_word",random_word);
 				
-				HttpSession session = request.getSession();
+				//HttpSession session = request.getSession();
 				session.setAttribute("account", account);
 				session.setAttribute("staff.getName()",staff.getName());
+				session.setAttribute("staff", staff);
 							
 				forwardPath = "/WEB-INF/jsp/attendance.jsp";
 			}
