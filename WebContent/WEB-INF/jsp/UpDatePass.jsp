@@ -44,8 +44,12 @@
 		<br>
 		
 		<input type="hidden" name="random_word" value="<%= random_word %>">
-		<a href="AccountServlet">戻る</a>
-		<input type="submit" value="更新"><br>
+		<input type="submit" value="更新">
+	</form>
+	
+  	<form action="AccountServlet" method="post">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
+		<input type="submit" name="MySubmit" value="戻る">
 	</form>
 
 </body>

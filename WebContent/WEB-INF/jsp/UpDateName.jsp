@@ -25,10 +25,10 @@
 		※20文字以内<br>
 		<br>
 		<input type="hidden" name="random_word" value="<%= random_word %>">
-		<input type="submit" value="更新"><br>
+		<input type="submit" value="更新">
 	</form>
 	
-  	<form action="MainServlet" method="post">
+  	<form action="AccountServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" name="MySubmit" value="戻る">
 	</form>

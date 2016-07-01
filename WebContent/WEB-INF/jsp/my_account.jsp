@@ -19,6 +19,7 @@
 	<p>名前　　　　　　　　<%= staff.getName() %></p>
 	<form action="AccountServlet" method="post">
 		<input type="hidden" name="name" value="name">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" value="編集">
 	</form>
 	<br>
@@ -30,6 +31,7 @@
 	<p>パスワード　　　　　<%= staff.getPass() %></p>
 	<form action="AccountServlet" method="post">
 		<input type="hidden" name="pass" value="pass">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" value="編集">
 	</form>
 	<br>

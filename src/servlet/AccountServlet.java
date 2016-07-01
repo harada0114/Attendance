@@ -15,9 +15,7 @@ public class AccountServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/my_account.jsp");
-		dispatcher.forward(request, response);
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,18 +34,22 @@ public class AccountServlet extends HttpServlet {
 			
 			System.out.println("名前編集が押されました");
 			forwardPath = "/WEB-INF/jsp/UpDateName.jsp";
-		}
+		} else
 		
 		if (!(mail == null)) {
 			
 			System.out.println("メール編集が押されました");
 			forwardPath = "/WEB-INF/jsp/UpDateMail.jsp";
-		}
+		} else
 		
 		if (!(pass == null)) {
 			
 			System.out.println("パスワード編集が押されました");
 			forwardPath = "/WEB-INF/jsp/UpDatePass.jsp";
+		} else {
+			
+			forwardPath = "/WEB-INF/jsp/my_account.jsp";
+			
 		}
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(forwardPath);

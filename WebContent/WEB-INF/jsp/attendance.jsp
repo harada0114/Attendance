@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" %>
-    <%@ page import="java.util.*" %>
+    <%@ page import="java.util.*, model.Staff" %>
     
     <%
     
 	String errorMsg = (String) request.getAttribute("errorMsg");
     String random_word = (String) request.getAttribute("random_word");
      
-    String name = (String) session.getAttribute("staff.getName()");    
+    Staff staff = (Staff) session.getAttribute("staff");    
 	%>
     
 <!DOCTYPE html>
@@ -17,12 +17,11 @@
 <title>勤怠管理</title>
 </head>
 <body>
-	<p>
-	<%= name %>さんお疲れ様です。
-	<br>
-	<a href="AccountServlet">マイアカウント</a>
-	</p>
+
+	<h2>ようこそ</h2>
 	
+	<p><%= staff.getName() %>さんお疲れ様です。</p>
+
 	<% if (errorMsg != null) { %>
 	<%= errorMsg %><br>
 	<% } %>
@@ -44,8 +43,11 @@
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 	<input type="submit" name="MySubmit" value="勤怠状況">
 	</form>
-	
 	<br>
+	<form action="AccountServlet" method="post">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
+		<input type="submit" name="MySubmit" value="マイアカウント">
+	</form>
 	<a href="LogoutServlet">ログアウト</a>
 </body>
 </html>
