@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import dao.TimeDAO.MsgLeaving;
 import model.Staff;
 import model.Login;
 
@@ -43,6 +42,41 @@ public class StaffDAO {
 		}
 		return false;		
 	}	
+	
+	
+		// パスワード検索メソッド
+		// メールで調べヒットしたパスワードを返す
+		public String SearchPass(Staff staff) throws ClassNotFoundException,SQLException {
+			
+			// 取得するパスワード
+			String find_pass = "";
+			
+			Connection conn = null;
+			
+			try {	
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+				
+				String sql = "SELECT pass FROM staff WHERE mail=?";
+				PreparedStatement pStmt = conn.prepareStatement(sql);
+				pStmt.setString(1, staff.getMail());
+								
+				ResultSet rs = pStmt.executeQuery();
+							
+				// パスワードが取得できれば
+				if (rs.next()) {
+					find_pass = rs.getString("pass");
+				} 
+			
+			// 必ずDBを切断
+			} finally { 
+				if (conn != null) {
+					conn.close();
+				}
+			}
+			return find_pass;		
+		}
+	
 		
 	// 新規登録メソッド
 	// レコードを追加できればtrue、できなければfalse

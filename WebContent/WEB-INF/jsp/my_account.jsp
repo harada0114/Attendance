@@ -32,7 +32,7 @@
 	-->
 	<br>
 
-	<p>パスワード　　　　　●●●●●●</p>
+	<p>パスワード　　　　　<%= staff.getPass() %></p>
 	<form action="/Attendance/AccountServlet" method="post">
 		<input type="hidden" name="pass" value="pass">
 		<input type="submit" value="編集">

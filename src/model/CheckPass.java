@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 public class CheckPass {
@@ -24,4 +25,11 @@ public class CheckPass {
 			return ErrorMsgPass.OK;
 		}
 	}
+	
+	// パスワード確認メソッド
+	// 取得したpassを返します
+		public String SearchPass(Staff staff) throws ClassNotFoundException, SQLException {
+			CheckDoublePassLogic logic = new CheckDoublePassLogic();
+			return logic.execute(staff);
+		}
 }
