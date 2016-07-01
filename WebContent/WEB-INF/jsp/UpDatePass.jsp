@@ -22,7 +22,7 @@
 	<%= errorMsg_new_pass %><br>
 	<% } %>	
 	
-	<form action="/Attendance/UpDatePassServlet" method="post">
+	<form action="UpDatePassServlet" method="post">
 		新しいパスワード　　　：<input type="text" name="new_pass"><br>
 		※半角英数6文字<br>
 		<br>
@@ -44,7 +44,7 @@
 		<br>
 		
 		<input type="hidden" name="random_word" value="<%= random_word %>">
-		<a href="/Attendance/AccountServlet">戻る</a>
+		<a href="AccountServlet">戻る</a>
 		<input type="submit" value="更新"><br>
 	</form>
 

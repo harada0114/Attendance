@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -29,6 +28,9 @@ public class AccountServlet extends HttpServlet {
 		String name = request.getParameter("name");
 		String mail = request.getParameter("mail");
 		String pass = request.getParameter("pass");
+		
+		String random_word = request.getParameter("random_word");
+		request.setAttribute("random_word",random_word); 
 		
 		if (!(name == null)) {
 			

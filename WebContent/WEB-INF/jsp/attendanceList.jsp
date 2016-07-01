@@ -81,7 +81,7 @@
 		
 		<p>
 		<!-- 先月ボタン -->
-        <form action='/Attendance/CalendarServlet' method='post'>
+        <form action='CalendarServlet' method='post'>
         	<input type='hidden' name='random_word' value='<%= random_word %>'>
         	<input type='hidden' name='YEAR' value='<%= year %>'>
         	<input type='hidden' name='MONTH' value='<%= month - 1 %>'>
@@ -93,7 +93,7 @@
         <%= month + 1 %>月
 
 		<!-- 翌月ボタン -->
-        <form action='/Attendance/CalendarServlet' method='post'>
+        <form action='CalendarServlet' method='post'>
         	<input type='hidden' name='random_word' value='<%= random_word %>'>
         	<input type='hidden' name='YEAR' value='<%= year %>'>
         	<input type='hidden' name='MONTH' value='<%= month + 1 %>'>
@@ -152,7 +152,7 @@
         </table>
         
     <p>
-  	<form action="/Attendance//MainServlet" method="post">
+  	<form action="MainServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" name="MySubmit" value="戻る">
 	</form>

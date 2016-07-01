@@ -3,6 +3,7 @@
     
     <%
     String errorMsg = (String) request.getAttribute("errorMsg");
+    String random_word = (String) request.getAttribute("random_word");
     %>
     
 <!DOCTYPE html>
@@ -19,12 +20,17 @@
 	<%= errorMsg %><br><br>
 	<% } %>
 	
-	<form action="/Attendance/UpDateNameServlet" method="post">
+	<form action="UpDateNameServlet" method="post">
 		新しい名前　　　：<input type="text" name="name"><br>
 		※20文字以内<br>
 		<br>
-		<a href="/Attendance/AccountServlet">戻る</a>
+		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" value="更新"><br>
+	</form>
+	
+  	<form action="MainServlet" method="post">
+		<input type="hidden" name="random_word" value="<%= random_word %>">
+		<input type="submit" name="MySubmit" value="戻る">
 	</form>
 
 </body>

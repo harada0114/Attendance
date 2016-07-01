@@ -12,8 +12,8 @@ public class ChangeString {
 		if (time == null) {
 			sb = "<br>";
 		
-		// 退社がnull
 		} else {
+			// 退社がnull
 			if (time.getLeaving() == null) {
 				sb = "出社:" + "<br>　　" + time.getAdmission().substring(11, 16) + "<br>" + "退社:" + "<br>　　" + "未完了" + "<br>";
 		   

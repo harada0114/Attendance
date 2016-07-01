@@ -17,29 +17,24 @@
 	<h2>アカウント設定</h2>
 	
 	<p>名前　　　　　　　　<%= staff.getName() %></p>
-	<form action="/Attendance/AccountServlet" method="post">
+	<form action="AccountServlet" method="post">
 		<input type="hidden" name="name" value="name">
 		<input type="submit" value="編集">
 	</form>
 	<br>
 	
 	<p>メールアドレス　　　<%= staff.getMail() %></p>
-	<!--
-	<form action="/Attendance/AccountServlet" method="post">
-		<input type="hidden" name="mail" value="mail">
-		<input type="submit" value="編集">
-	</form>
-	-->
+	
 	<br>
 
 	<p>パスワード　　　　　<%= staff.getPass() %></p>
-	<form action="/Attendance/AccountServlet" method="post">
+	<form action="AccountServlet" method="post">
 		<input type="hidden" name="pass" value="pass">
 		<input type="submit" value="編集">
 	</form>
 	<br>
 
-	<form action="/Attendance/MainServlet" method="post">
+	<form action="MainServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 		<input type="submit" name="MySubmit" value="戻る">
 	</form>

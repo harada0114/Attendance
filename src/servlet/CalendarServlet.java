@@ -33,6 +33,9 @@ public class CalendarServlet extends HttpServlet {
     	// random_wordをキーにmailアドレスを取得
     	String mail = account.get(random_word);
     	
+    	System.out.println(mail);
+    	System.out.println(random_word);
+    	
     	int year = 0;     // 年
         int month = 0;    // 月
         int day = 1;      // 日 ついたち

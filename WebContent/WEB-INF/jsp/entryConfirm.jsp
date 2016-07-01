@@ -39,7 +39,7 @@
 	名前　　　　　：<%= entryStaff.getName() %><br>
 	<br>
 	
-	<form action="/Attendance/SendCreateStaffServlet" method="post">
+	<form action="SendCreateStaffServlet" method="post">
 		<input type="hidden" name="mail" value="<%= entryStaff.getMail() %>">
 		<input type="hidden" name="pass" value="<%= entryStaff.getPass() %>">
 		<input type="hidden" name="name" value="<%= entryStaff.getName() %>">
@@ -47,7 +47,7 @@
 	</form>
 	
 	<% } %>
-	<a href="/Attendance/CreateStaffServlet">戻る</a>
+	<a href="CreateStaffServlet">戻る</a>
 	
 </body>
 </html>

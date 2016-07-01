@@ -108,8 +108,7 @@ public class LoginServlet extends HttpServlet {
 				
 				System.out.println("ifの外="+random_word);
 				request.setAttribute("random_word",random_word);
-				
-				//HttpSession session = request.getSession();
+
 				session.setAttribute("account", account);
 				session.setAttribute("staff.getName()",staff.getName());
 				session.setAttribute("staff", staff);

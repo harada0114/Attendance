@@ -20,7 +20,7 @@
 	<p>
 	<%= name %>さんお疲れ様です。
 	<br>
-	<a href="/Attendance/AccountServlet">マイアカウント</a>
+	<a href="AccountServlet">マイアカウント</a>
 	</p>
 	
 	<% if (errorMsg != null) { %>
@@ -28,24 +28,24 @@
 	<% } %>
 		
 	<!-- 出社 -->
-	<form action="/Attendance/AdmissionServlet" method="post">
+	<form action="AdmissionServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 	<input type="submit" name="MySubmit" value="出社">
 	</form>
 	
 	<!-- 退社 -->
-	<form action="/Attendance/LeavingServlet" method="post">
+	<form action="LeavingServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 	<input type="submit" name="MySubmit" value="退社">
 	</form>
 	
 	<!-- 一覧 -->
-	<form action="/Attendance/CalendarServlet" method="post">
+	<form action="CalendarServlet" method="post">
 		<input type="hidden" name="random_word" value="<%= random_word %>">
 	<input type="submit" name="MySubmit" value="勤怠状況">
 	</form>
 	
 	<br>
-	<a href="/Attendance/LogoutServlet">ログアウト</a>
+	<a href="LogoutServlet">ログアウト</a>
 </body>
 </html>
