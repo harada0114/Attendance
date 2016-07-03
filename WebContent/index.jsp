@@ -36,7 +36,8 @@
 		<br>
 		<input type="submit" value="login">
 	</form>
-	<p><a href="CreateStaffServlet">新規登録</a></p>
+	<p><a href="CreateStaffServlet">新規登録</a>
+	<a href="AdminLoginServlet">管理画面</a></p>
 	
 	<p class="border">テスト用アカウント<br>
 	メールアドレス：aaa@aaa.co,jp<br>
