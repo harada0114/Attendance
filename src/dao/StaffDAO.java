@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Staff;
 import model.Login;
@@ -192,5 +194,42 @@ public class StaffDAO {
 			}
 		}
 		return staff;
+	}
+	
+	// アカウント一覧
+	public List<Staff> findAll() throws ClassNotFoundException, SQLException {
+		
+		List<Staff> staff_List = new ArrayList<Staff>();
+		Staff find_staff = null;
+		  		
+		Connection conn = null;
+	    
+		try { 	   
+			Class.forName("com.mysql.jdbc.Driver");				      		  	  
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		
+			// 登録者全レコードを取得
+			String sql = "SELECT * FROM staff";
+			PreparedStatement pStmt = conn.prepareStatement(sql);			 			    					
+			ResultSet rs = pStmt.executeQuery();	     
+
+			// 取得した結果全てをArrayListに格納		
+			while (rs.next()) {	
+				String mail = rs.getString("mail");		 
+				String pass = rs.getString("pass");		  				
+				String name = rs.getString("name");		  				
+		 		
+				// インスタンスに格納
+				find_staff = new Staff(mail, pass, name);		
+		 				
+				// Listにインスタンスを順番に詰める		
+				staff_List.add(find_staff);
+			}			
+		} finally {		  		
+			if (conn != null) {		  	
+				conn.close();		  
+			}		  			
+		}		  		
+		return staff_List;
 	}
 }

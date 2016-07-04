@@ -52,8 +52,8 @@ public class AdminLoginServlet extends HttpServlet {
 				boolean ispass = bo.isexecute(pass);
 			
 				// パスが一致したなら
-				if (ispass) {
-					forwardPath = "/WEB-INF/jsp/admin.jsp";
+				if (ispass) {					
+					forwardPath = "/UserListServlet";
 				} else {
 					msg = "パスワードが違います";
 					forwardPath = "/WEB-INF/jsp/adminLogin.jsp";
