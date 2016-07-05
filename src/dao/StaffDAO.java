@@ -197,7 +197,79 @@ public class StaffDAO {
 	}
 	
 	// アカウント一覧
-	public List<Staff> findAll() throws ClassNotFoundException, SQLException {
+		public List<Staff> findAll(int count) throws ClassNotFoundException, SQLException {
+			
+			List<Staff> staff_List = new ArrayList<Staff>();
+			Staff find_staff = null;
+			  		
+			Connection conn = null;
+		    
+			try { 	   
+				Class.forName("com.mysql.jdbc.Driver");				      		  	  
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+			
+				// 登録者全レコードを取得
+				//String sql = "UPDATE staff SET " + column + " = ? WHERE mail = ?";SELECT * FROM staff LIMIT 10 OFFSET 0;
+				String sql = "SELECT * FROM staff LIMIT 10 OFFSET "+ count;
+				PreparedStatement pStmt = conn.prepareStatement(sql);			 			    					
+				ResultSet rs = pStmt.executeQuery();
+
+				System.out.println("sql = "+sql);
+				
+				// 取得した結果全てをArrayListに格納		
+				while (rs.next()) {	
+					String mail = rs.getString("mail");		 
+					String pass = rs.getString("pass");		  				
+					String name = rs.getString("name");		  				
+			 		
+					// インスタンスに格納
+					find_staff = new Staff(mail, pass, name);		
+			 				
+					// Listにインスタンスを順番に詰める		
+					staff_List.add(find_staff);
+				}			
+			} finally {		  		
+				if (conn != null) {		  	
+					conn.close();		  
+				}		  			
+			}
+			return staff_List;
+		}
+		
+		// アカウントは全部で何件あるか
+		public int staffCount() throws ClassNotFoundException, SQLException {
+			
+			int count = 0;
+			
+			Connection conn = null;
+		    
+			try { 	   
+				Class.forName("com.mysql.jdbc.Driver");				      		  	  
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+			
+				// 登録者全レコードを取得
+				String sql = "select count(*) from staff";
+				PreparedStatement pStmt = conn.prepareStatement(sql);	
+				
+				ResultSet rs = pStmt.executeQuery();	     
+
+				// 件数を取得
+				if (rs.next()) {
+				count = rs.getInt(1);		 
+				}
+							
+			} finally {		  		
+				if (conn != null) {		  	
+					conn.close();		  
+				}		  			
+			}		  		
+			return count;
+		}
+	
+	
+	
+	// アカウント一覧
+	/*public List<Staff> findAll(int count) throws ClassNotFoundException, SQLException {
 		
 		List<Staff> staff_List = new ArrayList<Staff>();
 		Staff find_staff = null;
@@ -209,9 +281,10 @@ public class StaffDAO {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 		
 			// 登録者全レコードを取得
-			String sql = "SELECT * FROM staff";
+			//String sql = "UPDATE staff SET " + column + " = ? WHERE mail = ?";SELECT * FROM staff LIMIT 10 OFFSET 0;
+			String sql = "SELECT * FROM staff LIMIT 10 OFFSET "+ count;
 			PreparedStatement pStmt = conn.prepareStatement(sql);			 			    					
-			ResultSet rs = pStmt.executeQuery();	     
+			ResultSet rs = pStmt.executeQuery();
 
 			// 取得した結果全てをArrayListに格納		
 			while (rs.next()) {	
@@ -229,7 +302,39 @@ public class StaffDAO {
 			if (conn != null) {		  	
 				conn.close();		  
 			}		  			
-		}		  		
+		}
+		System.out.println(staff_List);
 		return staff_List;
 	}
+	
+	// アカウントは全部で何件あるか
+	public int staffCount() throws ClassNotFoundException, SQLException {
+		
+		int count = 0;
+		
+		Connection conn = null;
+	    
+		try { 	   
+			Class.forName("com.mysql.jdbc.Driver");				      		  	  
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		
+			// 登録者全レコードを取得
+			String sql = "select count(*) from staff";
+			PreparedStatement pStmt = conn.prepareStatement(sql);	
+			
+			ResultSet rs = pStmt.executeQuery();	     
+
+			// 件数を取得
+			if (rs.next()) {
+			count = rs.getInt(1);		 
+			}
+						
+		} finally {		  		
+			if (conn != null) {		  	
+				conn.close();		  
+			}		  			
+		}		  		
+		return count;
+	}
+	*/
 }
