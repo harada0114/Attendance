@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import model.GetUserCountLogic;
 import model.GetUserListLogic;
@@ -40,13 +41,25 @@ public class UserListServlet extends HttpServlet {
 			request.setAttribute("page", 0);
 			
 			try {				
-				// 必要なページ数を取得
+				// ユーザの件数を取得
 				GetUserCountLogic getUserCountLogic = new GetUserCountLogic();		
-				int all_page = getUserCountLogic.execute();
- 			
+				int count = getUserCountLogic.execute();
+				
+				// 取得した全件数を保存
+				HttpSession session = request.getSession();
+				session.setAttribute("count", count);
+				
+				// ページ数
+				// 1ページに10件表示
+				int all_page = count / 10;
+				
+				// あまった分を次へに表示するため
+				if (count % 10 != 0) {
+					all_page = all_page + 1;
+				}
+				
 				// 必要ページ数をセッションで保存
 				System.out.println("必要なpage = "+all_page);
-				HttpSession session = request.getSession();
 				session.setAttribute("all_page", all_page);
 			
 			} catch (ClassNotFoundException | SQLException e) {

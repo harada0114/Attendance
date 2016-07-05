@@ -7,6 +7,7 @@
     List<Staff> staff_List = (List<Staff>) request.getAttribute("staff_List");
     int all_page = (int) session.getAttribute("all_page");
     int now_page = (int) request.getAttribute("page");
+    int count = (int) session.getAttribute("count");
     %>
     
 <!DOCTYPE html>
@@ -25,6 +26,8 @@
 	<% if (!msg.equals("")) { %>
 	<%= msg %><br>
 	<% } %>
+	
+	全<%= count %>件
 	
 	<table border="2">
 	<tr>
