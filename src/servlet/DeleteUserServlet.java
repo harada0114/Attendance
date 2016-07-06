@@ -29,6 +29,7 @@ public class DeleteUserServlet extends HttpServlet {
 		int[] delete_user = (int[]) session.getAttribute("delete_user");
 		List<Staff> staff_List = (List<Staff>) session.getAttribute("staff_List");
 			
+		String error_msg = "";
 		String msg = "";
 		
 		try {	
@@ -41,7 +42,7 @@ public class DeleteUserServlet extends HttpServlet {
 				boolean can_delete = getUserListLogic.execute(staff_List.get(delete_user[i]).getMail());
 				
 				if (!can_delete) {
-					msg = "システムエラーが発生しました。一部削除されていない可能性があります";
+					error_msg = "システムエラーが発生しました。一部削除されていない可能性があります";
 				} else {
 					msg = "削除しました";
 				}
@@ -49,12 +50,13 @@ public class DeleteUserServlet extends HttpServlet {
 	
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			msg = "システムエラーが発生しました。管理者にご連絡ください";
+			error_msg = "システムエラーが発生しました。管理者にご連絡ください";
 		}
 				
+		request.setAttribute("error_msg",error_msg);
 		request.setAttribute("msg",msg);
 		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/UserListServlet");
 		dispatcher.forward(request, response);
 	}
 }

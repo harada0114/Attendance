@@ -4,6 +4,7 @@
     
     <%
     String msg = (String) request.getAttribute("msg");
+    String error_msg = (String) request.getAttribute("error_msg");
     
     List<Staff> staff_List = (List<Staff>) session.getAttribute("staff_List");
     int all_page = (int) session.getAttribute("all_page");
@@ -27,6 +28,10 @@
 	<% if (!msg.equals("")) { %>
 	<%= msg %><br><br>
 	<% } %>
+	
+	<% if (!error_msg.equals("")) { %>
+	<%= error_msg %><br><br>
+	<% } else { %>
 	
 	全<%= count %>件
 	
@@ -70,6 +75,8 @@
 			<input type="hidden" name="next_page" value=<%= now_page + 1 %>>
 			<input type="submit" name="MySubmit" value="次の10件へ">
 		</form>
+	<% } %>
+	
 	<% } %>
 	
 	<p>

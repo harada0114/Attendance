@@ -26,7 +26,7 @@ public class UserListServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			
-		String msg = "";
+		String error_msg = "";
 		
 		// 変換用
 		int page = 0;
@@ -64,7 +64,7 @@ public class UserListServlet extends HttpServlet {
 			
 			} catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
-				msg = "システムエラーが発生しました。管理者にご連絡ください";
+				error_msg = "システムエラーが発生しました。管理者にご連絡ください";
 			}
 			
 		} else {
@@ -83,10 +83,10 @@ public class UserListServlet extends HttpServlet {
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			msg = "システムエラーが発生しました。管理者にご連絡ください";
+			error_msg = "システムエラーが発生しました。管理者にご連絡ください";
 		}
 		
-		request.setAttribute("msg",msg);
+		request.setAttribute("error_msg",error_msg);
 	
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/admin.jsp");
 		dispatcher.forward(request, response);
