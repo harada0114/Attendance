@@ -4,9 +4,10 @@
     
     <%
     String msg = (String) request.getAttribute("msg");
-    List<Staff> staff_List = (List<Staff>) request.getAttribute("staff_List");
+    
+    List<Staff> staff_List = (List<Staff>) session.getAttribute("staff_List");
     int all_page = (int) session.getAttribute("all_page");
-    int now_page = (int) request.getAttribute("page");
+    int now_page = (int) session.getAttribute("page");
     int count = (int) session.getAttribute("count");
     %>
     
@@ -24,33 +25,34 @@
 	ご自身が作成したユーザのみ操作してください。</p>
 	
 	<% if (!msg.equals("")) { %>
-	<%= msg %><br>
+	<%= msg %><br><br>
 	<% } %>
 	
 	全<%= count %>件
+	
+	<form action="DeleteUserConfirmServlet" method="post">
 	
 	<table border="2">
 	<tr>
 		<th>削除</th><th>名前</th><th>メールアドレス</th><th>勤怠状況</th>
 	</tr>
 	
-	<% for (Staff staff : staff_List) { %>
+	<% for (int i = 0; i < staff_List.size(); i++) { %>
 		<tr>
-			<td><input type ="checkbox" name ="a" value ="c"></td>
-			<td><%= staff.getName() %></td>
-			<td><form action="" method="post"><%= staff.getMail() %>
-			<input type="hidden" name="random_word" value="">
-			<input type="submit" name="MySubmit" value="編集">
-			</form></td>
-			<td><form action="" method="post">
-			<input type="hidden" name="random_word" value="">
-			<input type="submit" name="MySubmit" value="確認">
-			</form></td>
+			<td><input type ="checkbox" name ="user" value ="<%= i %>"></td>
+			<td><%= staff_List.get(i).getName() %></td>
+			<td><%= staff_List.get(i).getMail() %><input type="hidden" name="random_word" value=""><input type="submit" name="MySubmit" value="編集"></td>
+			<td><input type="hidden" name="random_word" value=""><input type="submit" name="MySubmit" value="確認"></td>
 		</tr>
 	<% } %>
 	
 	</table>
 	
+	<input type="submit" value="削除">
+	
+	</form>
+	
+	<br>
 	<% System.out.println(""); %>
 	<% System.out.println("「今のページ」 = "+now_page); %>
 	
@@ -71,11 +73,8 @@
 	<% } %>
 	
 	<p>
-	<form action="" method="post">
-		<input type="submit" name="MySubmit" value="一括削除">
-	</form>
-	</p>
 	<a href="LoginServlet">トップ</a>
+	</p>
 
 </body>
 </html>

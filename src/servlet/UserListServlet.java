@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import model.GetUserCountLogic;
 import model.GetUserListLogic;
@@ -32,13 +31,15 @@ public class UserListServlet extends HttpServlet {
 		// 変換用
 		int page = 0;
 		
+		HttpSession session = request.getSession();
+		
 		// 押されたページ数をJSPから取得
 		request.setCharacterEncoding("UTF-8");
 		String next_page = request.getParameter("next_page");
 		
 		// 最初だけの処理
 		if (next_page == null) {
-			request.setAttribute("page", 0);
+			session.setAttribute("page", 0);
 			
 			try {				
 				// ユーザの件数を取得
@@ -46,7 +47,6 @@ public class UserListServlet extends HttpServlet {
 				int count = getUserCountLogic.execute();
 				
 				// 取得した全件数を保存
-				HttpSession session = request.getSession();
 				session.setAttribute("count", count);
 				
 				// ページ数
@@ -71,7 +71,7 @@ public class UserListServlet extends HttpServlet {
 		
 			// 取得したリクエストパラをintにし、保存
 			page = Integer.parseInt(next_page);
-			request.setAttribute("page", page);
+			session.setAttribute("page", page);
 		}
 		try {				
 
@@ -79,7 +79,7 @@ public class UserListServlet extends HttpServlet {
 			GetUserListLogic getUserListLogic = new GetUserListLogic();
 			List<Staff> staff_List = getUserListLogic.execute(page * 10);
 				
-	        request.setAttribute("staff_List", staff_List);	
+	        session.setAttribute("staff_List", staff_List);	
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
