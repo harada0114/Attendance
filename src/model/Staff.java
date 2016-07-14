@@ -38,4 +38,7 @@ public class Staff implements Serializable {
 		this.name = name;
 	}
 	
+	public String toString() {
+		return "[mail = "+this.mail+" / pass = "+this.pass+" / name = "+this.name+"]";
+	}
 }
