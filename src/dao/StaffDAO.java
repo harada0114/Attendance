@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import model.Staff;
@@ -44,6 +45,50 @@ public class StaffDAO {
 		}
 		return false;		
 	}	
+	
+	
+	// メールで検索メソッド
+	// 配列で送られてきたメールで調べヒットしたリストStaffを返す
+	public List<Staff> searchMail(String[] mail) throws ClassNotFoundException,SQLException {
+				
+		Staff staff = null;
+		List<Staff> staff_List = new ArrayList<Staff>();
+				
+		Connection conn = null;
+				
+		try {	
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+					
+			for (int i = 0; i < mail.length; i++) {
+
+				String sql = "SELECT * FROM staff WHERE mail=?";
+				PreparedStatement pStmt = conn.prepareStatement(sql);
+				pStmt.setString(1, mail[i]);
+									
+				ResultSet rs = pStmt.executeQuery();
+								
+				if (rs.next()) { 
+					String mail2 = rs.getString("mail");
+					String pass = rs.getString("pass");
+					String name = rs.getString("name");
+				    	
+					staff = new Staff(mail2,pass,name);
+							
+					staff_List.add(staff);
+				}	
+			}
+							
+		} finally {		  		
+			if (conn != null) {		  	
+				conn.close();		  
+			}		  			
+		}	
+		for (int i = 0; i < staff_List.size(); i++) {
+			System.out.println("メールで検索結果 = "+staff_List.get(i).toString()); 			
+		}	
+		return staff_List;
+	}
 	
 	
 		// パスワード検索メソッド
@@ -197,74 +242,75 @@ public class StaffDAO {
 	}
 	
 	// アカウント一覧
-		public List<Staff> findAll(int count) throws ClassNotFoundException, SQLException {
+	public List<Staff> findAll(int count, int hope_count) throws ClassNotFoundException, SQLException {
 			
-			List<Staff> staff_List = new ArrayList<Staff>();
-			Staff find_staff = null;
+		List<Staff> staff_List = new ArrayList<Staff>();
+		Staff find_staff = null;
 			  		
-			Connection conn = null;
+		Connection conn = null;
 		    
-			try { 	   
-				Class.forName("com.mysql.jdbc.Driver");				      		  	  
-				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		try { 	   
+			Class.forName("com.mysql.jdbc.Driver");				      		  	  
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 			
-				// 登録者10件分のレコードを取得
-				//String sql = "UPDATE staff SET " + column + " = ? WHERE mail = ?";SELECT * FROM staff LIMIT 10 OFFSET 0;
-				String sql = "SELECT * FROM staff LIMIT 10 OFFSET "+ count;
-				PreparedStatement pStmt = conn.prepareStatement(sql);			 			    					
-				ResultSet rs = pStmt.executeQuery();
+			// 登録者hope_count件分のレコードを取得
+			//String sql = "UPDATE staff SET " + column + " = ? WHERE mail = ?";SELECT * FROM staff LIMIT 10 OFFSET 0;
+			String sql = "SELECT * FROM staff LIMIT "+hope_count+" OFFSET "+ count;
+			PreparedStatement pStmt = conn.prepareStatement(sql);			 			    					
+			ResultSet rs = pStmt.executeQuery();
 
-				System.out.println("sql = "+sql);
+			System.out.println("sql = "+sql);
 				
-				// 取得した結果全てをArrayListに格納		
-				while (rs.next()) {	
-					String mail = rs.getString("mail");		 
-					String pass = rs.getString("pass");		  				
-					String name = rs.getString("name");		  				
+			// 取得した結果全てをArrayListに格納		
+			while (rs.next()) {	
+				String mail = rs.getString("mail");		 
+				String pass = rs.getString("pass");		  				
+				String name = rs.getString("name");		  				
 			 		
-					// インスタンスに格納
-					find_staff = new Staff(mail, pass, name);		
+				// インスタンスに格納
+				find_staff = new Staff(mail, pass, name);		
 			 				
-					// Listにインスタンスを順番に詰める		
-					staff_List.add(find_staff);
-				}			
-			} finally {		  		
-				if (conn != null) {		  	
-					conn.close();		  
-				}		  			
-			}
-			return staff_List;
+				// Listにインスタンスを順番に詰める		
+				staff_List.add(find_staff);
+			}			
+		} finally {		  		
+			if (conn != null) {		  	
+				conn.close();		  
+			}		  			
 		}
+		return staff_List;
+	}
 		
-		// アカウントは全部で何件あるか
-		public int staffCount() throws ClassNotFoundException, SQLException {
+		
+	// アカウントは全部で何件あるか
+	public int staffCount() throws ClassNotFoundException, SQLException {
 			
-			int count = 0;
+		int count = 0;
 			
-			Connection conn = null;
+		Connection conn = null;
 		    
-			try { 	   
-				Class.forName("com.mysql.jdbc.Driver");				      		  	  
-				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		try { 	   
+			Class.forName("com.mysql.jdbc.Driver");				      		  	  
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 			
-				// 登録者全レコードを取得
-				String sql = "select count(*) from staff";
-				PreparedStatement pStmt = conn.prepareStatement(sql);	
+			// 登録者全レコードを取得
+			String sql = "select count(*) from staff";
+			PreparedStatement pStmt = conn.prepareStatement(sql);	
 				
-				ResultSet rs = pStmt.executeQuery();	     
+			ResultSet rs = pStmt.executeQuery();	     
 
-				// 件数を取得
-				if (rs.next()) {
+			// 件数を取得
+			if (rs.next()) {
 				count = rs.getInt(1);		 
-				}
+			}
 							
-			} finally {		  		
-				if (conn != null) {		  	
-					conn.close();		  
-				}		  			
-			}		  		
-			return count;
-		}
+		} finally {		  		
+			if (conn != null) {		  	
+				conn.close();		  
+			}		  			
+		}		  		
+		return count;
+	}
 	
 	
 	// アカウント削除
@@ -294,5 +340,68 @@ public class StaffDAO {
 			}		  			
 		}
 		return true;
+	}
+	
+	// 返り値配列で検索後、ヒットしたレコードをリスト型に詰め戻す
+	public List<Staff> searchResults(String[] word) throws ClassNotFoundException, SQLException {
+		
+		List<Staff> staff_List = new ArrayList<Staff>();
+		Staff find_staff = null;
+		
+		// 配列数分のsql文作成
+		StringBuilder sq = new StringBuilder();
+		
+		System.out.println("配列数 = "+word.length);
+		
+		for (int i = 0; i < word.length; i++) {
+			sq.append("%"+word[i]+"%");
+		}
+		
+		// StringBuilderインスタンスから Stringインスタンスを生成
+		String t = sq.toString();
+		
+		System.out.println(t);	
+		  		
+		Connection conn = null;
+	    
+		try { 	   
+			Class.forName("com.mysql.jdbc.Driver");				      		  	  
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+			
+			String sql = "SELECT * FROM staff WHERE mail like ? OR name like ?";
+			
+			PreparedStatement pStmt = conn.prepareStatement(sql);		
+			pStmt.setString(1, t);
+			pStmt.setString(2, t);
+				
+			ResultSet rs = pStmt.executeQuery();
+			
+			// 取得した結果全てをArrayListに格納		
+			while (rs.next()) {
+				System.out.println("該当あり");
+				String mail = rs.getString("mail");		 
+				String pass = rs.getString("pass");		  				
+				String name = rs.getString("name");	
+	 		
+				// インスタンスに格納
+				find_staff = new Staff(mail, pass, name);		
+	 				
+				// Listにインスタンスを順番に詰める		
+				staff_List.add(find_staff);
+					
+			}
+				
+		} finally {		  		
+			if (conn != null) {		  	
+				conn.close();		  
+			}		  			
+		}
+		
+		for (int i = 0; i < staff_List.size(); i++) {
+			System.out.println("DB接続結果 = "+staff_List.get(i).toString()); 
+		
+		}
+		
+		return staff_List;
 	}
 }
