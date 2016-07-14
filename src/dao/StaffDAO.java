@@ -348,19 +348,29 @@ public class StaffDAO {
 		List<Staff> staff_List = new ArrayList<Staff>();
 		Staff find_staff = null;
 		
-		// 配列数分のsql文作成
+		// 配列数分のsql作成
 		StringBuilder sq = new StringBuilder();
 		
 		System.out.println("配列数 = "+word.length);
 		
+		// 配列を昇順に格納
 		for (int i = 0; i < word.length; i++) {
 			sq.append("%"+word[i]+"%");
 		}
 		
+		StringBuilder sq2 = new StringBuilder();
+		
+		// 配列を降順に格納
+		for (int x = word.length; x > 0; x--) {
+			sq2.append("%"+word[x-1]+"%");
+		}
+		
 		// StringBuilderインスタンスから Stringインスタンスを生成
 		String t = sq.toString();
+		String t2 = sq2.toString();
 		
-		System.out.println(t);	
+		System.out.println("t = "+t);
+		System.out.println("t2 = "+t2);
 		  		
 		Connection conn = null;
 	    
@@ -368,13 +378,17 @@ public class StaffDAO {
 			Class.forName("com.mysql.jdbc.Driver");				      		  	  
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
 			
-			String sql = "SELECT * FROM staff WHERE mail like ? OR name like ?";
+			String sql = "SELECT * FROM staff WHERE (mail like ? OR name like ?) OR (mail like ? OR name like ?)";
 			
 			PreparedStatement pStmt = conn.prepareStatement(sql);		
 			pStmt.setString(1, t);
 			pStmt.setString(2, t);
+			pStmt.setString(3, t2);
+			pStmt.setString(4, t2);
 				
 			ResultSet rs = pStmt.executeQuery();
+			
+			System.out.println(pStmt.toString());
 			
 			// 取得した結果全てをArrayListに格納		
 			while (rs.next()) {
