@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.BackTrackLogic;
 import model.CheckWord;
 import model.SearchUserLogic;
 import model.Staff;
@@ -61,8 +62,20 @@ public class SearchUserServlet extends HttpServlet {
 
 		} else {
 			try {
+				
+				// 入力されたtextの全パターンを配列化
+				
+				// BackTrackLogicクラスで使うための配列
+				boolean[] flag = new boolean[word.length+1];
+				String[] new_word = new String[word.length];
+				List new_word_list = new ArrayList<String>();
+				
+				BackTrackLogic d = new BackTrackLogic();
+				List word_List = d.make_perm(0, word, flag, new_word, new_word_list);
+				
+				// DBに接続
 				SearchUserLogic b = new SearchUserLogic();
-				staff_List = b.execute(word);
+				staff_List = b.execute(word_List);
 			
 				if (staff_List.isEmpty()) {
 					msg = "該当データはありません";

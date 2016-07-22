@@ -7,7 +7,7 @@ import dao.StaffDAO;
 
 public class SearchUserLogic {
 	
-	public List<Staff> execute(String[] word) throws ClassNotFoundException, SQLException{
+	public List<Staff> execute(List word) throws ClassNotFoundException, SQLException{
 		
 		StaffDAO c = new StaffDAO();
 		return c.searchResults(word);	

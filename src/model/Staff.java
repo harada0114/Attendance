@@ -3,6 +3,8 @@ package model;
 
 import java.io.Serializable;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
+
 public class Staff implements Serializable {
 	
 	private String mail; // メールアドレス
@@ -40,5 +42,20 @@ public class Staff implements Serializable {
 	
 	public String toString() {
 		return "[mail = "+this.mail+" / pass = "+this.pass+" / name = "+this.name+"]";
+	}
+	
+	public boolean equals (Object a) {
+		if (a == this) return true;
+		if (a == null) return false;
+		if (!(a instanceof Staff)) return false;
+		return true;
+	}
+	
+	public int hashCode() {
+		int result = 37; // 適当な数字
+		result = result * 31 + mail.hashCode();
+		result = result * 31 + pass.hashCode();
+		result = result * 31 + name.hashCode();
+		return result;
 	}
 }

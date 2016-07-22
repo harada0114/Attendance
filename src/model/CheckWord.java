@@ -22,6 +22,16 @@ public class CheckWord {
 			// 文字列を切り出す
 			b = c.split(" ", 0);
 			
+			// 検索ワードが多すぎると重くなる対策。5でブッチする。
+			if (b.length > 5) {
+				String[] e = new String[5];
+				
+				for (int i = 0; i <= 4; i++) {
+					e[i] = b[i];
+				}
+				return e;
+			}
+			
 			return b;
 		}	
 	}

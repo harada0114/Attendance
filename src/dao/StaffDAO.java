@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import model.Staff;
@@ -342,80 +342,89 @@ public class StaffDAO {
 		return true;
 	}
 	
-	// 返り値配列で検索後、ヒットしたレコードをリスト型に詰め戻す
-	public List<Staff> searchResults(String[] word) throws ClassNotFoundException, SQLException {
+	// 部分一致検索メソッド
+	// 全パターンが入った返り値配列で検索後、ヒットしたレコードをリスト型に詰め戻す
+	public List<Staff> searchResults(List word) throws ClassNotFoundException, SQLException {
 		
 		List<Staff> staff_List = new ArrayList<Staff>();
 		Staff find_staff = null;
 		
-		// 配列数分のsql作成
-		StringBuilder sq = new StringBuilder();
+		System.out.println("全パターン数 = "+word.size());
+
+		StringBuilder sq = null;
 		
-		System.out.println("配列数 = "+word.length);
-		
-		// 配列を昇順に格納
-		for (int i = 0; i < word.length; i++) {
-			sq.append("%"+word[i]+"%");
-		}
-		
-		StringBuilder sq2 = new StringBuilder();
-		
-		// 配列を降順に格納
-		for (int x = word.length; x > 0; x--) {
-			sq2.append("%"+word[x-1]+"%");
-		}
-		
-		// StringBuilderインスタンスから Stringインスタンスを生成
-		String t = sq.toString();
-		String t2 = sq2.toString();
-		
-		System.out.println("t = "+t);
-		System.out.println("t2 = "+t2);
-		  		
-		Connection conn = null;
-	    
-		try { 	   
-			Class.forName("com.mysql.jdbc.Driver");				      		  	  
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+		// DBにパターン数回接続
+		// 配列をsetString用に装飾
+		for (int i = 0; i < word.size(); i++) {
+			Object[] arr = (Object[])word.get(i);
 			
-			String sql = "SELECT * FROM staff WHERE (mail like ? OR name like ?) OR (mail like ? OR name like ?)";
+			// 2週目以降のappendの上書き防止
+			sq = new StringBuilder();
 			
-			PreparedStatement pStmt = conn.prepareStatement(sql);		
-			pStmt.setString(1, t);
-			pStmt.setString(2, t);
-			pStmt.setString(3, t2);
-			pStmt.setString(4, t2);
+			for (int j = 0; j < arr.length; j++) {
+				String w = arr[j].toString().replaceAll("\\[", "");
+				w = w.replaceAll("\\]", "");
 				
-			ResultSet rs = pStmt.executeQuery();
-			
-			System.out.println(pStmt.toString());
-			
-			// 取得した結果全てをArrayListに格納		
-			while (rs.next()) {
-				System.out.println("該当あり");
-				String mail = rs.getString("mail");		 
-				String pass = rs.getString("pass");		  				
-				String name = rs.getString("name");	
-	 		
-				// インスタンスに格納
-				find_staff = new Staff(mail, pass, name);		
-	 				
-				// Listにインスタンスを順番に詰める		
-				staff_List.add(find_staff);
-					
+				sq.append("%"+w+"%");
 			}
+			
+			// StringBuilderインスタンスから Stringインスタンスを生成
+			String t = sq.toString();
+			System.out.println("t = "+t);
+		  		
+			Connection conn = null;
+	    
+			try { 	   
+				Class.forName("com.mysql.jdbc.Driver");				      		  	  
+				conn = DriverManager.getConnection("jdbc:mysql://localhost/attendance","harada","dandt");
+
+				String sql = "SELECT * FROM staff WHERE mail like ? OR name like ?";
+			
+				PreparedStatement pStmt = conn.prepareStatement(sql);		
+				pStmt.setString(1, t);
+				pStmt.setString(2, t);
 				
-		} finally {		  		
-			if (conn != null) {		  	
-				conn.close();		  
-			}		  			
-		}
+				ResultSet rs = pStmt.executeQuery();
+			
+				System.out.println(pStmt.toString());
+			
+				// 取得した結果全てをArrayListに格納		
+				while (rs.next()) {
+					System.out.println("該当あり");
+					String mail = rs.getString("mail");		 
+					String pass = rs.getString("pass");		  				
+					String name = rs.getString("name");	
+	 		
+					// インスタンスに格納
+					find_staff = new Staff(mail, pass, name);		
+	 				
+					// Listにインスタンスを順番に詰める		
+					staff_List.add(find_staff);
+
+				}
+				
+			} finally {		  		
+				if (conn != null) {		  	
+					conn.close();		  
+				}		  			
+			}
+		} // for
 		
 		for (int i = 0; i < staff_List.size(); i++) {
 			System.out.println("DB接続結果 = "+staff_List.get(i).toString()); 
-		
 		}
 		
-		return staff_List;
+		// 重複リストを削除し、新たに格納
+		HashSet<Staff> checkHash = new HashSet<Staff>();
+		checkHash.addAll(staff_List);
+		
+		List<Staff> staff_List2 = new ArrayList<Staff>();
+		staff_List2.addAll(checkHash);
+		
+		for (Staff staff : staff_List2) {
+			System.out.println("重複 = " + staff);
+		}
+		
+		return staff_List2;
 	}
 }
