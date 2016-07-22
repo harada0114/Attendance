@@ -56,6 +56,7 @@
 	
 	<% if (!text.equals("")) { %>
 	<form action="SearchUserServlet" method="post">
+		<input type="hidden" name="text" value="<%= text %>">
 		<input type="submit" name="MySubmit" value="戻る">
 	</form>
 	<% } else { %>
